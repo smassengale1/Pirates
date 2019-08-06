@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CheckIn/Out</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="/static/pirates/css/main.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <style>
+  .fakeimg {
+    height: 200px;
+    background: #aaa;
+  }
+  </style>
+</head>
+    <body class="background">
+        <div class = 'row bg-dark text-center font-weight-bold'>
+            <div class ='col-sm-3'>
+                <div class ='fakeimg rounded'>Image</div>
+                <!--<img src="/static/pirates/img/pirate.png" alt="" class ='image'>-->
+            </div>
+            <div class ='col-sm-6'>
+                <div class="jumbotron text-center display-2 bg-dark" style="margin-bottom:0">
+                    <p class='text-secondary'>Dover School District</p>
+                    <!--<img src="/static/pirates/img/pirates.png" alt="" class= 'float-left'> -->
+                </div>
+            </div>
+            <div class ='col-sm-3'>
+                <div class ='fakeimg rounded'>Image</div>
+            </div>
+        </div>
+
+
+        {%  block content %}
+        <div class="container">
+            <div class="row text-center align-items-center mt-5 mt-md-0'">
+                <div class = 'col-lg-12 display-4'>
+                    <p>Technology CheckIn/Checkout Center</p>
+                </div>
+            </div>
+
+            <div class="row text-center">
+                <div class = 'col-lg-12 display-4'>
+                </div>
+            </div>
+
+            <div class="row text-center">
+                <div class = 'col-lg-12 display-4'>
+                </div>
+            </div>
+
+            <div class="row align-items-center mt-5 mt-md-0">
+                <div class="col-lg-12 text-center">
+                <form action="/login">
+                    <input type="submit" class="btn btn-primary btn-lg btn-block" value="Login" ></input>
+                </form>
+                </div>
+            </div>
+
+        </div>
+        {%  endblock %}
+
+
+        <div class="footer  text-center display-2 bg-dark">
+          <p class='text-secondary'>Technology CheckIn/Checkout Center</p>
+        </div>
+
+    </body>
+</html>

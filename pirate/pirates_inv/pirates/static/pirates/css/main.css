@@ -1,0 +1,41 @@
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  text-align: center;
+}
+
+.image {
+  opacity: 0.5;
+  filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+
+
+.background{
+    background: url(/static/pirates/img/background.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+}
+
+.jumbotron{
+    opacity: 0.9;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+#registerCol {
+    background: #C0C0C0;
+}
+
+#signInRow,
+   #signOutRown{
+        margin-top:105px;
+        margin-bottom: 105px;
+    }
+
+#signInSmall{
+    color: white;
+}
