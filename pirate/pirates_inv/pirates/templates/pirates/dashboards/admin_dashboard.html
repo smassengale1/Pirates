@@ -17,11 +17,11 @@
     <li class="nav-item">
         <div class="btn-group">
              <button class="btn btn-secondary btn-md dropdown-toggle mr-5" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Data Analysis
+                Manage
              </button>
           <div class="dropdown-menu bg-secondary" aria-labelledby="dropdownMenuLink">
-            <a class="dropdown-item mt-2 text-light" href="#">Something</a>
-            <a class="dropdown-item mt-2 text-light" href="#">Something</a>
+            <a class="dropdown-item mt-2 text-light" href="#">Vendors</a>
+            <a class="dropdown-item mt-2 text-light" href="#">Locations</a>
             <a class="dropdown-item mt-2 text-light" href="#">Something</a>
           </div>
         </div>
@@ -58,7 +58,7 @@
 {% block rightNav %}
     <div class="mx-auto order-0">
         {% if title %}
-            <a class="navbar-brand mx-auto" href="#">{{ title }}</a>
+            <a class="navbar-brand mx-auto" href="/">{{ title }}</a>
         {% else %}
             <a class="navbar-brand mx-auto" href="#">Dover Technology</a>
         {% endif %}
