@@ -2,12 +2,9 @@ from django.db import models
 
 # Create your models here.
 
-
-
-
 class Location(models.Model):
     building = models.CharField(db_column='Building',  max_length=255)
-    room = models.CharField(db_column='Room', max_length=255)
+    room = models.CharField(db_column='Room', unique=True, max_length=255)
 
     class Meta:
         db_table = 'Location'
@@ -15,7 +12,7 @@ class Location(models.Model):
 
 
 class Vendor(models.Model):
-    vendor_name = models.CharField(db_column='Vendor', max_length=255)
+    vendor_name = models.CharField(db_column='Vendor', primary_key=True, max_length=255)
 
     class Meta:
         db_table = 'vendor'
