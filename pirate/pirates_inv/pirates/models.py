@@ -4,7 +4,7 @@ from django.db import models
 
 class Location(models.Model):
     building = models.CharField(db_column='Building',  max_length=255)
-    room = models.CharField(db_column='Room', unique=True, max_length=255)
+    room = models.CharField(db_column='Room', max_length=255)
 
     class Meta:
         db_table = 'Location'
@@ -16,5 +16,8 @@ class Vendor(models.Model):
 
     class Meta:
         db_table = 'vendor'
+
+    def __str__(self):
+        return self.vendor_name
 
 
