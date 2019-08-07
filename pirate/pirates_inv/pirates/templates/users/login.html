@@ -1,6 +1,7 @@
 {% extends "pirates/main.html" %}
-{%  load crispy_forms_tags %}
-{%  block content %}
+{% load crispy_forms_tags %}
+
+{% block container %}
     <div class="container" >
         <div class="content-section" id="signInRow" >
             <form method="POST">
@@ -28,4 +29,5 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{%  endblock %}
+

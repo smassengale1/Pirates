@@ -52,7 +52,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'pirates_inv.urls'
+LOGIN_URL = '/login'
+
 
 TEMPLATES = [
     {

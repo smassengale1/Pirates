@@ -18,60 +18,69 @@
 
 </head>
 
-{% block body %}
-    <body class="background">
-        <div class = 'row bg-dark text-center font-weight-bold'>
-            <div class ='col-sm-3'>
-                <div class ='fakeimg rounded'>Image</div>
-                <!--<img src="/static/pirates/img/pirate.png" alt="" class ='image'>-->
-            </div>
-            <div class ='col-sm-6'>
-                <div class="jumbotron text-center display-3 bg-dark" style="margin-bottom:0">
-                    <p class='text-secondary'>Dover School District</p>
-                    <!--<img src="/static/pirates/img/pirates.png" alt="" class= 'float-left'> -->
-                </div>
-            </div>
-            <div class ='col-sm-3'>
-                <div class ='fakeimg rounded'>Image</div>
-            </div>
+<body class="dashBackground">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+            <ul class="navbar-nav mr-auto">
+            {%  block leftNav %}
+                {% if not user.is_anonymous %}
+                    <li class="nav-item">
+                        <div class="btn-group">
+                             <button class="btn btn-secondary btn-md dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ user }}
+                             </button>
+                          <div class="dropdown-menu bg-secondary" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item mt-2 text-light" href="#">My Devices</a>
+                            <a class="dropdown-item mt-2 text-light" href="#">Submit Ticket</a>
+                            <a class="dropdown-item mt-2 text-light" href="{% url 'logout' %}">Log Out</a>
+                          </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="//codeply.com">My Devices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Check In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Check Out</a>
+                    </li>
+                {% endif %}
+            {% endblock %}
+            </ul>
         </div>
-
-
-        {%  block content %}
-        <div class="container">
-            <div class="row text-center align-items-center mt-5 mt-md-0'">
-                <div class = 'col-lg-12 display-4'>
-                    <p>Technology CheckIn/Checkout Center</p>
-                </div>
-            </div>
-
-            <div class="row text-center">
-                <div class = 'col-lg-12 display-4'>
-                </div>
-            </div>
-
-            <div class="row text-center">
-                <div class = 'col-lg-12 display-4'>
-                </div>
-            </div>
-
-            <div class="row align-items-center mt-5 mt-md-0">
-                <div class="col-lg-12 text-center">
-                <form action="/login">
-                    <input type="submit" class="btn btn-primary btn-lg btn-block" value="Login" ></input>
-                </form>
-                </div>
-            </div>
-
+        {%  block rightNav %}
+        <div class="mx-auto order-0">
+            {% if title %}
+                <a class="navbar-brand mx-auto" href="#">{{ title }}</a>
+            {% else %}
+                <a class="navbar-brand mx-auto" href="#">Dover Technology</a>
+            {% endif %}
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
-        {%  endblock %}
-
-
-        <div class="footer  text-center display-2 bg-dark">
-          <p class='text-secondary'>Technology CheckIn/Checkout Center</p>
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            {% if not user.is_anonymous %}
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Submit Ticket</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+            {%  endif %}
         </div>
+    {% endblock %}
+    </nav>
+
+    {% block container %}
+    {% endblock %}
+
+</body>
     {% block js %}
     {% endblock js %}
-    </body>
-{% endblock %}
+
 </html>
