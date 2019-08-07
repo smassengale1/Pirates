@@ -18,7 +18,10 @@
     background: url(/static/pirates/img/background.png);
     background-repeat: no-repeat;
     background-size: 100%;
+}
 
+.dashBackground{
+    background-color: lightslategrey;
 }
 
 .jumbotron{

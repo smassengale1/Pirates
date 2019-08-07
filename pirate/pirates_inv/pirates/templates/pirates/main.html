@@ -15,7 +15,10 @@
     background: #aaa;
   }
   </style>
+
 </head>
+
+{% block body %}
     <body class="background">
         <div class = 'row bg-dark text-center font-weight-bold'>
             <div class ='col-sm-3'>
@@ -67,6 +70,8 @@
         <div class="footer  text-center display-2 bg-dark">
           <p class='text-secondary'>Technology CheckIn/Checkout Center</p>
         </div>
-
+    {% block js %}
+    {% endblock js %}
     </body>
+{% endblock %}
 </html>
