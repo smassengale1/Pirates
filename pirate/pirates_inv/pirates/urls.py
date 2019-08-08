@@ -22,6 +22,7 @@ from django.views import View
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin/dashboard/', pirates_views.dashboard, name = 'dashboard'),
     path('', pirates_views.dashboard, name='dashboard'),
     path('dashboard/', pirates_views.dashboard, name = 'dashboard'),
     path('dashboard/vendors', pirates_views.vendors.as_view(), name = 'vendors'),

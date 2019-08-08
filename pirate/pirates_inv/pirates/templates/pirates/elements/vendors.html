@@ -1,1 +1,26 @@
 {%  extends 'pirates/dashboards/admin_dashboard.html' %}
+
+
+<!--
+
+<h1>Vendors</h1>
+{% for vendor in vendors %}
+    <h4>{{ vendor }}<h2>
+{% endfor %}
+
+
+-->
+
+
+
+{% block container %}
+    <div container>
+    {% for v in vendors%}
+       <div class="row">
+            <div class="col-sm">
+                {{ v }}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
