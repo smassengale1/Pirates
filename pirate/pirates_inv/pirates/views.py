@@ -45,11 +45,19 @@ class vendors(View):
         page_template = 'pirates/elements/vendors.html'
         page_title = 'Dover Technology Vendors'
 
-        vendors = Vendor.objects.all()
+        v = []
+        for v_name in Vendor.objects.all():
+            v_id = (Vendor.objects.get(vendor_name=v_name)).vendor_id
+
+            print(v_id)
+            v.append({
+                v_name,
+                v_id,
+            })
 
         context = {
-            'title' : page_title,
-            'vendors': vendors,
+            'page_title': page_title,
+            'vendors': v,
         }
 
 
