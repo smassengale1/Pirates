@@ -1,29 +1,42 @@
 {%  extends 'pirates/dashboards/admin_dashboard.html' %}
 
-
-<!--
-
-<h1>Vendors</h1>
-{% for vendor in vendors %}
-    <h4>{{ vendor }}<h2>
-{% endfor %}
-
-
--->
+{% block head %}
+    <link rel="stylesheet" href="/static/pirates/css/vendors.css" />
+{% endblock %}
 
 
 
 {% block container %}
-    <div container>
-    {% for vendor in vendors%}
-       <div class="row">
-            <div class="col-sm-3">
-                {{ vendor }}
-            </div>
-            <div class = "col-sm-3">
+    <div class="container">
+        <div class="row mx-auto align-middle">
+            <div class ='col  ' id="table-col">
+                <table class="table table-hover table-secondary table-stripped table-md table-bordered ">
+                  <thead class ="thead-darkgrey"
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col" class="text-center" id="v_name_header">Vendor</th>
+                      <th scope="col" id="v_id_header">Vendor ID</th>
+                      <th scope="col" id="v_dev_header">Devices From</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for vendor in vendors%}
+                        <tr>
 
+                          <th scope="row">{{ forloop.counter }}</th>
+                          <td>{{vendor.v_name}}</td>
+                          <td>{{ vendor.v_id }}</td>
+                          <td>#</td>
+                        </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+                    <div class="col">
+            <button class="btn btn-secondary btn-md dropdown-toggle mr-5" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Manage
+            </button>
+        </div>
             </div>
         </div>
-    {% endfor %}
     </div>
 {% endblock %}

@@ -51,8 +51,8 @@ class vendors(View):
 
             print(v_id)
             v.append({
-                v_name,
-                v_id,
+                'v_name': v_name,
+                'v_id':v_id,
             })
 
         context = {
