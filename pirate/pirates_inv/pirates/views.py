@@ -67,18 +67,26 @@ class vendors(View):
 
 
     def post(self, request, *args, **kwargs):
-        json_data = json.loads(request.body)
-        vendorName = json_data['vendor_name']
-        vendorID= json_data['vendor_id']
-
-        if self.addVendor(vendorName, vendorID):
+        if self.addVendor(request):
             return JsonResponse({'status': 'success'})
         else:
-            return JsonResponse({'status': 'error', 'error': 'No Vulnerabilties Found'})
+            return JsonResponse(status=400, data={'status':'error','error':'Error Not Resolved'})
 
 
 
-    def addVendor(self, vendorName, vendorID):
-        print(vendorID)
+
+
+    def addVendor(self, request):
+        body_unicode = request.body.decode('utf-8')
+        print(body_unicode)
+        #body = json.loads(body_unicode)
+
+
+
+
+        # vendorID= json_data['vendor_id']
+
+        # print(json_data)
         return True
+
 
