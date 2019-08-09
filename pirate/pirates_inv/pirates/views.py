@@ -5,6 +5,8 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import permission_required
 from django.views import View
 from pirates.models import *
+from django.http import JsonResponse
+import json
 from django.http import Http404
 
 
@@ -64,6 +66,19 @@ class vendors(View):
         return render(request, page_template, context)
 
 
-    def post(selfs, request, *args, **kwargs):
-        pass
+    def post(self, request, *args, **kwargs):
+        json_data = json.loads(request.body)
+        vendorName = json_data['vendor_name']
+        vendorID= json_data['vendor_id']
+
+        if self.addVendor(vendorName, vendorID):
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'error': 'No Vulnerabilties Found'})
+
+
+
+    def addVendor(self, vendorName, vendorID):
+        print(vendorID)
+        return True
 

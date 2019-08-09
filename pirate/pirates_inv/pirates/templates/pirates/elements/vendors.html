@@ -22,7 +22,6 @@
                   <tbody>
                   {% for vendor in vendors %}
                         <tr>
-
                           <th scope="row">{{ forloop.counter }}</th>
                           <td>{{vendor.v_name}}</td>
                           <td>{{ vendor.v_id }}</td>
@@ -51,19 +50,21 @@
                 </button>
               </div>
               <div class="modal-body">
+                  <form method="POST">
+                      {%  csrf_token %}
                       <div class="input-group mb-3">
                           <div class="input-group-prepend">
                             <span class="input-group-text" id="vendor_name">Vendor</span>
                           </div>
-                          <input type="text" class="form-control" aria-label="Vendor" id="VendorName" aria-describedby="inputGroup-sizing-default">
+                          <input type="text" class="form-control" aria-label="Vendor" id="vendorName" aria-describedby="inputGroup-sizing-default">
                       </div>
                       <div class="input-group mb-3">
                           <div class="input-group-prepend">
                             <span class="input-group-text" id="vendor_id">ID</span>
                           </div>
-                          <input type="text" class="form-control" aria-label="VendorID" id="VendorID" aria-describedby="inputGroup-sizing-default">
+                          <input type="text" class="form-control" aria-label="VendorID" id="vendorID" aria-describedby="inputGroup-sizing-default">
                       </div>
-
+                  </form>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
