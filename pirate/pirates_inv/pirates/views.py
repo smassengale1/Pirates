@@ -50,8 +50,6 @@ class vendors(View):
         v = []
         for v_name in Vendor.objects.all():
             v_id = (Vendor.objects.get(vendor_name=v_name)).vendor_id
-
-            print(v_id)
             v.append({
                 'v_name': v_name,
                 'v_id':v_id,
@@ -70,23 +68,13 @@ class vendors(View):
         if self.addVendor(request):
             return JsonResponse({'status': 'success'})
         else:
-            return JsonResponse(status=400, data={'status':'error','error':'Error Not Resolved'})
-
-
+            return JsonResponse({'status': 'error', 'error': 'No Vulnerabilties Found'})
 
 
 
     def addVendor(self, request):
-        body_unicode = request.body.decode('utf-8')
-        print(body_unicode)
-        #body = json.loads(body_unicode)
-
-
-
-
-        # vendorID= json_data['vendor_id']
-
-        # print(json_data)
+        vendorName = request.POST.get('vendorName')
+        print(request.body)
         return True
-
+        #x = request.POST.get('vendor_name')
 

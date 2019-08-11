@@ -1,30 +1,54 @@
-function addVendor(){
-    let vendorName = document.getElementById("vendorName").value;
-    let vendorID = document.getElementById("vendorID").value;
+function filterVendors(){
+    let input, filter, table, tr, td, i, txtValue;
+
+    input = document.getElementById("myInput").value;
+    table = document.getElementById("v_table");
+    tr = table.getElementsByTagName("tr");
 
 
-    $(document).ready(function () {
-        $.ajax({
-            method: 'POST',
-            url:  '/dashboard/vendors',
-            data: JSON.stringify({
-                'vendor_name': vendorName,
-                'vendor_id': vendorID,
+    for (i=0; i<tr.length; i++){
+        vendorName = tr[i].getElementsByTagName("td")[0];
+        vendorID = tr[i].getElementsByTagName("td")[1];
 
-            }),
-            success: function (data) {
-                alert('success')
 
-            },
-            error: function (e) {
-                alert('error')
-            },
-            dataType: "json",
-            contentType: "application/json"
 
-        });
-    });
+        if(vendorName || vendorID){
+            vName = vendorName.textContent || vendorName.innerText;
+            isvName = vName.toLowerCase().indexOf(input.toLowerCase())>-1;
 
+            vID = vendorID.textContent || vendorID.innerText;
+            isvID = vID.indexOf(input)>-1;
+
+            if(isvName || isvID){
+                tr[i].style.display="";
+            }
+            else{
+                tr[i].style.display ="none"
+            }
+        }
+    }
 }
-        //$('#null_value').removeClass('d-none');
+
+
+function addVendor(){
+    vendor_name = document.getElementById("vendorName").value;
+    vendor_id =  document.getElementById("vendorID").value;
+
+    ajax_queue.ajax_dispatch({
+        type: 'POST',
+        url: '/dashboard/vendors',
+        data: {
+            'vendorName': vendor_name,
+            'vendorID': vendor_id,
+
+        },
+        success: function () {
+        },
+        error: function (e) {
+            console.log(e);
+        },
+        dataType: "json",
+        contentType: "application/json"
+    });
+}
 

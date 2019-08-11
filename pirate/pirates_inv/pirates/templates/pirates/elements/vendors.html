@@ -9,8 +9,9 @@
 {% block container %}
     <div class="container ">
         <div class="row mx-auto align-left mt-5" id="table-row">
-            <div class ='col  ' id="table-col">
-                <table class="table table-hover table-secondary table-stripped table-md table-bordered" id="table">
+            <div class ='col' id="table-col">
+            <input type="text" class="float-right mb-1 rounded active" id="myInput" onkeyup="filterVendors()" placeholder="Search">
+                <table class="table table-hover table-secondary table-stripped table-md table-bordered" id="v_table">
                   <thead class ="thead-darkgrey"
                     <tr>
                       <th scope="col">#</th>
@@ -50,8 +51,8 @@
                 </button>
               </div>
               <div class="modal-body">
-                  <form method="POST">
-                      {%  csrf_token %}
+                  <form method="post">
+                      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                       <div class="input-group mb-3">
                           <div class="input-group-prepend" >
                             <span class="input-group-text" id="vendor_name">Vendor</span>

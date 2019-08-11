@@ -1,11 +1,18 @@
-#v_id_header{
-    width: 50px;
+
+
+.results tr[visible='false'],
+.no-result{
+  display:none;
 }
 
-#v_name_header{
-    width: 200px;
+.results tr[visible='true']{
+  display:table-row;
 }
 
+.counter{
+  padding:8px;
+  color:#ccc;
+}
 .container {
     height: 100%;
     display: flex;
