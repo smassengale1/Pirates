@@ -1,9 +1,153 @@
+function showDate(){
+    var rd = document.getElementById('replacementDate')
+
+    $('#purchaseDate').keyup(function(){
+            let date = this.value
+
+            if (date.length > 1){
+                let month = date.slice(5,7)
+                let year = parseInt(date.slice(0,4))
+
+                switch(month){
+                    case '01' :
+                        replacementMonth = 'January';
+                        break;
+                    case '02':
+                        replacementMonth = 'February';
+                        break;
+                    case '03':
+                        replacementMonth = 'March';
+                        break;
+                    case '04':
+                        replacementMonth = 'April';
+                        break;
+                    case '05':
+                        replacementMonth = 'May';
+                        break;
+                    case '06':
+                        replacementMonth = 'June';
+                        break;
+                    case '07':
+                        replacementMonth = 'July';
+                        break;
+                    case '08':
+                        replacementMonth = 'August';
+                        break;
+                    case '09':
+                        replacementMonth = 'September';
+                        break;
+                    case '10':
+                        replacementMonth = 'October';
+                        break;
+                    case '11':
+                        replacementMonth = 'November';
+                        break;
+                    case '12':
+                        replacementMonth = 'December';
+                        break;
+                    default:
+                        replacementMonth = '';
+                        break;
+
+                }
+                replacementYear = year + 5
+
+                rd.value = replacementMonth + " " + replacementYear
+
+            }
+
+    })
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function addtoDate(){
+
+    let purchaseDate = document.getElementById('purchaseDate').value;
+    let year = parseInt(purchaseDate.slice(0,4))
+    let month = purchaseDate.slice(5,7)
+
+   let replacementYear = year + 5
+   let replacementMonth = ''
+   
+
+    switch(month){
+        case '01' :
+            replacementMonth = 'January';
+            break;
+        case 02:
+            replacementMonth = 'February';
+            break;
+        case 03:
+            replacementMonth = 'March';
+            break;
+        case 04:
+            replacementMonth = 'April';
+            break;
+        case 05:
+            replacementMonth = 'May';
+            break;
+        case 06:
+            replacementMonth = 'June';
+            break;
+        case 07:
+            replacementMonth = 'July';
+            break;
+        case 08:
+            replacementMonth = 'August';
+            break;
+        case 09:
+            replacementMonth = 'September';
+            break;
+        case 10:
+            replacementMonth = 'October';
+            break;
+        case 11:
+            replacementMonth = 'November';
+            break;
+        case 12:
+            replacementMonth = 'December';
+            break;
+        default:
+            replacementMonth = '';
+            break;
+
+    }
+
+    $('#replacementDate').append(`{$replacementMonth} ${replacementYear}`)
+
+
+}
 function filterVendors(){
     let input, filter, table, tr, td, i, txtValue;
-
-    input = document.getElementById("myInput").value;
-    table = document.getElementById("v_table");
+    for(table = 0; table < 7; table++){
+        let name = 'myInput' + String(table)
+        document.getElementById(name)
+    }
+    document.getElementById("v_table");
     tr = table.getElementsByTagName("tr");
+
+
 
 
     for (i=0; i<tr.length; i++){
@@ -28,8 +172,6 @@ function filterVendors(){
         }
     }
 }
-
-
 function addVendor(){
     vendor_name = document.getElementById("vendorName").value;
     vendor_id =  document.getElementById("vendorID").value;

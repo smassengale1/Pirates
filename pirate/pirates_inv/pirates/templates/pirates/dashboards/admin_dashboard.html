@@ -4,12 +4,13 @@
     <li class="nav-item">
         <div class="btn-group">
              <button class="btn btn-secondary btn-md dropdown-toggle mr-5" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Inventory
+                View
              </button>
           <div class="dropdown-menu bg-secondary" aria-labelledby="dropdownMenuLink">
-            <a class="dropdown-item mt-2 text-light" href="#">View Devices</a>
-            <a class="dropdown-item mt-2 text-light" href="#">Manage Devices</a>
-            <a class="dropdown-item mt-2 text-light" href="#">Add Devices</a>
+            <a class="dropdown-item mt-2 font-weight-bold font-italic border-bottom border-dark" href="#">District</a>
+            <a class="dropdown-item mt-2 text-light" href="#">High School</a>
+            <a class="dropdown-item mt-2 text-light" href="#">Middle School</a>
+            <a class="dropdown-item mt-2 text-light" href="#">Elem School</a>
           </div>
         </div>
     </li>
@@ -20,8 +21,9 @@
                 Manage
              </button>
           <div class="dropdown-menu bg-secondary" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item mt-2 text-light" href="#">Assets</a>
             <a class="dropdown-item mt-2 text-light" href="{% url 'vendors' %}">Vendors</a>
-            <a class="dropdown-item mt-2 text-light" href="#">Locations</a>
+            <a class="dropdown-item mt-2 text-light" href="{% url 'locations' %}">Locations</a>
           </div>
         </div>
     </li>
@@ -39,6 +41,7 @@
         </div>
     </li>
 
+<!--
     <li class="nav-item">
         <div class="btn-group">
              <button class="btn btn-secondary btn-md dropdown-toggle mr-5" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,13 +54,14 @@
           </div>
         </div>
     </li>
+-->
 
 {% endblock %}
 
 {% block rightNav %}
     <div class="mx-auto order-0">
         {% if title %}
-            <a class="navbar-brand mx-auto" href="/">{{ title }}</a>
+            <a class="navbar-brand mx-auto" href="/">{{ page_title }}</a>
         {% else %}
             <a class="navbar-brand mx-auto" href="#">Dover Technology</a>
         {% endif %}

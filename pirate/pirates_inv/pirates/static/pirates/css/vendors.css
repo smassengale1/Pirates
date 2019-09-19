@@ -13,6 +13,7 @@
   padding:8px;
   color:#ccc;
 }
+
 .container {
     height: 100%;
     display: flex;
@@ -20,8 +21,11 @@
     align-items: center;
 }
 
-
 .d-none{
     border-style: solid;
     border-color: red;
+}
+
+label {
+    font-weight: bold;
 }

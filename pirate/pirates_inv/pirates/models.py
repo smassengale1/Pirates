@@ -2,38 +2,41 @@ from django.db import models
 
 # Create your models here.
 
-class Location(models.Model):
-    building = models.CharField(db_column='Building',  max_length=255)
-    room = models.CharField(db_column='Room', max_length=255)
+class Asset(models.Model):
+    asset_type = models.CharField(db_column='AssetType', max_length=255)
+    asset_brand = models.CharField(db_column='AssetBrand', max_length=255)
+    asset_model = models.CharField(db_column='AssetModel', max_length=255)
+    asset_building = models.CharField(db_column='AssetBuilding', default='Technology', max_length=255)
+    asset_room = models.CharField(db_column='AssetRoom', default='TBD', max_length=255)
+    asset_quantity = models.IntegerField (db_column='AssetQuantity')
 
     class Meta:
-        db_table = 'location'
-        unique_together = (('building', 'room'),)
+        db_table = 'asset'
+
 
 
 class Vendor(models.Model):
-    vendor_name = models.CharField(db_column='Vendor', primary_key=True, max_length=255)
-    vendor_id = models.CharField(db_column='VendorID', unique=True, max_length=255)
+    vendor_asset_type = models.CharField(db_column='VendorAssetType', max_length=255)
+    vendor_asset_brand = models.CharField(db_column='VendorAssetBrand', max_length=255)
+    vendor_asset_model = models.CharField(db_column='VendorAssetModel', max_length=255)
+    vendor_asset_vendor = models.CharField(db_column='VendorAssetVendor', max_length=255)
+    vendor_asset_quantity_bought = models.IntegerField (db_column='VendorAssetQuantityBought', default= -0)
+    vendor_asset_purchase_month = models.IntegerField(db_column='VendorAssetPurchaseMonth', null = True)
+    vendor_asset_purchase_year = models.IntegerField(db_column='VendorAssetPurchaseYear', null=True)
+    vendor_asset_replacement_month = models.IntegerField(db_column='VendorAssetReplacementMonth', default = 0)
+    vendor_asset_replacement_year = models.IntegerField(db_column='VendorAssetReplacementYear', default = 0)
 
     class Meta:
         db_table = 'vendor'
 
-    def __str__(self):
-        return self.vendor_name
 
-
-class Asset(models.Model):
-    asset_type= models.CharField(db_column='AssetType', max_length=255)
-    asset_brand= models.CharField(db_column='AssetBrand', max_length=255)
-    asset_model= models.CharField(db_column='AssetModel', max_length=255)
-    asset_tag= models.CharField(db_column='AssetTag', unique=True, max_length=255)
-    asset_sn= models.CharField(db_column='AssetSN', unique=True, max_length=255)
-    asset_vendor= models.CharField(db_column='AssetVendor', default='N/A', max_length=255)
-    asset_condition= models.CharField(db_column='AssetCondition', null=True, max_length=255)
-    asset_notes = models.TextField(db_column='AssetNotes', null=True)
-    asset_canbe_checked= models.BooleanField(db_column='AssetStatus', default=False)
+class Location(models.Model):
+    location_building = models.CharField(db_column='Building',  max_length=255)
+    location_room = models.CharField(db_column='Room', max_length=255)
 
     class Meta:
-        db_table= 'asset'
+        db_table = 'location'
+        unique_together = (('location_building', 'location_room'),)
+
 
 

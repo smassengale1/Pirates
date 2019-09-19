@@ -3,14 +3,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>CheckIn/Out</title>
+  <title>District Technology</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-   <link rel="stylesheet" href="/static/pirates/css/main.css">
+
+  <link rel="stylesheet" href="/static/pirates/css/main.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="icon" href="/static/pirates/img/favicon.ico" type="image/x-icon" />
+
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
   <style>
   .fakeimg {
     height: 200px;
@@ -55,10 +60,12 @@
         </div>
         {%  block rightNav %}
         <div class="mx-auto order-0">
-            {% if title %}
-                <a class="navbar-brand mx-auto" href="#">{{ title }}</a>
+            {% if page_title %}
+                {% block title %}
+                    <a class="navbar-brand mx-auto" href="#">{{ page_title}}</a>
+                {% endblock title %}
             {% else %}
-                <a class="navbar-brand mx-auto" href="#">Dover Technology</a>
+                <a class="navbar-brand mx-auto" href="#">District Technology</a>
             {% endif %}
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
                 <span class="navbar-toggler-icon"></span>

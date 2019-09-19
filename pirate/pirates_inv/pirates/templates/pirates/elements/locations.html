@@ -1,0 +1,147 @@
+{%  extends 'pirates/dashboards/admin_dashboard.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="/static/pirates/css/locations.css" />
+{% endblock %}
+
+{% block container %}
+
+
+
+    <div class = 'container-flex'>
+        <div class = "row">
+            <div class="btn-group btn-group-lg"  role="group" id ="buttonGroup">
+                <button type="button" class="btn btn-primary btn-sm " id="new_button">New</button>
+                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="edit_button">Edit</button>
+                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="delete_button">Delete</button>
+            </div>
+        </div>
+        <div class = "row" id="locCards">
+        {% for loc in locations%}
+                    <div class="card col-md-3 mt-2 mr-1 bg-dark" style="width: 15rem;">
+                        <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ loc.location }}</h5>
+                            <ul class = "list-group list-group-flush">
+                                <button type="button" id = "{{ loc.location }}"class="btn btn-outline-secondary"  data-toggle="modal" data-target="#locationModal_{{forloop.counter}}">
+                                    Room Count: {{ loc.roomCount }}
+                                </button>
+                            </ul>
+                        </div>
+                    </div>
+        {% endfor %}
+        </div>
+    </div>
+
+
+<!-- Modal -->
+        {% for loc in rooms %}
+            {% for buildings, roomNums  in loc.items %}
+
+            <div class="modal fade" id="locationModal_{{forloop.parentloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="locationModal" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+
+
+                  <div class="modal-header" >
+                    <h5 class="modal-title" >{{buildings}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
+
+                  <div class="modal-body"  id = 'modalBody'>
+                        <table class="table table-bordered  table-striped">
+                          <tbody>
+                          <tr>
+                          {% for classRooms in roomNums %}
+                            {% for colName, class in classRooms.items %}
+                              <td
+                                  id="{{class}}" onclick="editClass('{{buildings}}', this.id);"
+                                  data-dismiss="modal" data-toggle="modal"
+                                  data-target="#newLocationForm">
+
+                                  {{class}}
+
+                              </td>
+                                {% if forloop.parentloop.counter|divisibleby:6 %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                          {% endfor %}
+                          </tr>
+                          </tbody>
+                        </table>
+                  </div>
+
+
+
+
+
+                  <div class="modal-footer">
+                      <div class="float-left">
+                            <button id ='new_room' type="button" class="btn btn-success" onclick="editClass('{{buildings}}', this.id);" data-dismiss="modal" data-toggle="modal" data-target="#newLocationForm">New</button>
+                      </div>
+                      <div class="float-right">
+                          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                      </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+
+        {% endfor %}
+{% endfor %}
+
+<div class="modal" id = 'newLocationForm' tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Room</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+          <form>
+          <div class="form-group">
+            <label for="buildingLoc">Building</label>
+              <div id = "buildingLoc" class="input-group mb-3">
+                  <select class="custom-select" id="inputGroupSelect01">
+                    <option selected id ="selectedLoc"></option>
+                      {% for loc in rooms %}
+                        {% for building, roomNums  in loc.items %}
+                            <option value="{{building}}">{{building}}</option>
+                        {% endfor %}
+                      {% endfor %}
+                  </select>
+                </div>
+          </div>
+          <div class="form-group">
+            <label for="roomNumber">Room Number</label>
+            <input  type="text" class="form-control" id="roomNumber" placeholder="">
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="text/javascript" src="/static/pirates/js/locations_manage.js"></script>
+{% endblock js %}

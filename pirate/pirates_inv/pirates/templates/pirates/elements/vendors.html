@@ -8,39 +8,37 @@
 
 {% block container %}
     <div class="container ">
-        <div class="row mx-auto align-left mt-5" id="table-row">
-            <div class ='col' id="table-col">
-            <input type="text" class="float-right mb-1 rounded active" id="myInput" onkeyup="filterVendors()" placeholder="Search">
-                <table class="table table-hover table-secondary table-stripped table-md table-bordered" id="v_table">
-                  <thead class ="thead-darkgrey"
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col" class="text-center" id="v_name_header">Vendor</th>
-                      <th scope="col" id="v_id_header">Vendor ID</th>
-                      <th scope="col" id="v_dev_header">Devices From</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {% for vendor in vendors %}
-                        <tr>
-                          <th scope="row">{{ forloop.counter }}</th>
-                          <td>{{vendor.v_name}}</td>
-                          <td>{{ vendor.v_id }}</td>
-                          <td>#</td>
-                        </tr>
-                  {% endfor %}
-                  </tbody>
-                </table>
-                <div class="span2 ">
-                        <button type="button" class="btn btn-success  btn-lg  ml-1" data-toggle="modal" aria-pressed="false" autocomplete="off" data-target="#addVendor">
-                            +
-                        </button>
-                        <button type="button" class="btn btn-danger btn-lg  mr-1" data-toggle="button" aria-pressed="false" autocomplete="off" onclick="deleteVendor()">
-                            -
-                        </button>
-                </div>
+        <div class = "row">
+            <div class="btn-group btn-group-lg"  role="group" id ="buttonGroup">
+                <button type="button" class="btn btn-primary btn-sm " id="new_button">New</button>
+                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="edit_button">Edit</button>
+                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="delete_button">Delete</button>
             </div>
         </div>
+        <div class = "row" id="locCards">
+        {% for vendor in vendors %}
+            {% for x, y in vendor.items %}
+
+                    <div class="card col-md-3 mt-2 mr-1 bg-dark" style="width: 15rem;">
+                        <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ x }}</h5>
+                            <ul class = "list-group list-group-flush">
+                                <button type="button" id = "{{ loc.location }}"class="btn btn-outline-secondary"  data-toggle="modal" data-target="#locationModal_{{forloop.counter}}">
+                                    vendor count
+                                </button>
+                            </ul>
+                        </div>
+                    </div>
+        {% endfor %}
+             {% endfor %}
+        </div>
+    </div>
+
+
+
+
+
         <div class="modal fade" id="addVendor" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -51,28 +49,59 @@
                 </button>
               </div>
               <div class="modal-body">
-                  <form method="post">
-                      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                      <div class="input-group mb-3">
-                          <div class="input-group-prepend" >
-                            <span class="input-group-text" id="vendor_name">Vendor</span>
-                          </div>
-                          <input type="text" class="form-control" aria-label="Vendor" id="vendorName" aria-describedby="inputGroup-sizing-default" required>
-                      </div>
-                      <div class="input-group mb-3">
-                          <div class="input-group-prepend">
-                            <span class="input-group-text" id="vendor_id">ID</span>
-                          </div>
-                          <input type="text" class="form-control" aria-label="VendorID" id="vendorID" aria-describedby="inputGroup-sizing-default" required>
-                      </div>
-                      <div class="alert alert-danger d-none" role="alert" id="null_value">
-                                Please fill out both fields.
-                        </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" onclick="addVendor()">Save changes</button>
-                      </div>
-                  </form>
+<form class="needs-validation" novalidate>
+  <div class="form-row vendorEntry">
+      <div class="col-md-12 mb-3">
+        <label for="deviceType">Device Type</label>
+        <select class="custom-select mr-sm-2" id="deviceType" placeholder="---">
+            {% for devices in vendors %}
+                {% for deviceTypes in devices %}
+            <option value="{{forloop.counter}}">{{deviceTypes}}</option>
+                {% endfor %}
+            {% endfor %}
+        </select>
+      </div>
+    <div class="col-md-6 mb-3 vendorEntry">
+      <label for="deviceBrand">Device Make/Brand</label>
+      <input type="text" class="form-control" id="deviceBrand" required>
+    </div>
+    <div class="col-md-6 mb-3 vendorEntry">
+      <label for="deviceModel">Device Model</label>
+      <div class="input-group">
+        <input type="text" class="form-control" id="deviceModel"  required>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-6 mb-3 ">
+      <label for="deviceVendor" class = 'vendorEntry'>Vendor</label>
+      <input type="text" class="form-control" id="deviceVendor"  required>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="quantityBought">Quantity Bought</label>
+      <input type="number" class="form-control" id="quantityBought" required>
+    </div>
+  </div>
+   <div class="form-row vendorEntry">
+       <div class="col mb-3">
+           <div class="form-group">
+                <label for="purchaseDate">Purchase Date</label>
+                <input type="month" class="form-control mirror" onkeyup="showDate()"  id="purchaseDate">
+            </div>
+       </div>
+   </div>
+
+    <div class="form-row vendorEntry">
+       <div class="col mb-3">
+           <div class="form-group">
+                <label for="replacementDate">Anticipated Replacement Date</label>
+                <input type="text" class="form-control mirror"  data-date-fromat="MMMM YYYY" id="replacementDate">
+            </div>
+       </div>
+   </div>
+      <button class="btn btn-primary" type="submit">Add Vendor</button>
+    </form>
+
               </div>
             </div>
           </div>
@@ -81,5 +110,6 @@
 {% endblock %}
 
 {% block js %}
+
 <script type="text/javascript" src="/static/pirates/js/vendor_edit.js"></script>
 {% endblock js %}

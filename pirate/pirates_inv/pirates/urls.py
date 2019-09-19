@@ -15,16 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from pirates import views as pirates_views
+
 from users import views as user_views
 from django.contrib.auth import views as auth_views
 from django.views import View
 
+from .views import views_pirate as pirate_views
+from .views import views_manage as manage_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', pirates_views.dashboard, name='dashboard'),
-    path('dashboard/', pirates_views.dashboard, name = 'dashboard'),
-    path('dashboard/vendors', pirates_views.vendors.as_view(), name = 'vendors'),
+    path('', pirate_views.dashboard, name='dashboard'),
+    path('dashboard/', pirate_views.dashboard, name = 'dashboard'),
+    path('dashboard/vendors', manage_views.vendors.as_view(), name = 'vendors'),
+    path('dashboard/locations', manage_views.locations.as_view(), name = 'locations'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
 

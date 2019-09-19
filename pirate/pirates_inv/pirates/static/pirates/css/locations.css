@@ -1,0 +1,87 @@
+.container {
+    justify-content: center;
+    align-items: center;
+}
+
+#locCards {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#new_button{
+    background-color:#36832B;
+    border-color: #36832B
+
+}
+#new_button:hover{
+        background-color: #1A4D12;
+        border-color: #1A4D12;
+}
+
+
+#delete_button{
+    background-color: #B5333B;
+    border-color: #B5333B;
+}
+#delete_button:hover{
+        background-color: #6C1218;
+        border-color: #6C1218;
+}
+
+#edit_button{
+    background-color: #216BC0;
+    border-color: #216BC0;
+}
+#edit_button:hover{
+        background-color: #10437D;
+        border-color: #10437D;
+}
+
+
+#buttonGroup {
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+
+#rooms {
+    align-items: center;
+    justify-content: center;
+
+}
+
+td:hover {
+    background-color: #424040;
+    color: #EEEEEE;
+}
+
+.modal-header,
+    .modal-footer{
+        background-color: #635F5E;
+        color: #EEEEEE;
+
+ }
+
+.modal-body{
+    background-color: #BBB7B7;
+    color: #3C3C3C;
+    font-weight: bold;
+}
+
+
+.card-body{
+    text-align: center;
+    color: #DBDADA;
+}
+
+.list-group-item {
+    background-color: #7C7C7C;
+    color: black;
+}
+
+
+
