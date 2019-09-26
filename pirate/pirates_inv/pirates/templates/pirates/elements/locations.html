@@ -10,10 +10,9 @@
 
     <div class = 'container-flex'>
         <div class = "row">
-            <div class="btn-group btn-group-lg"  role="group" id ="buttonGroup">
-                <button type="button" class="btn btn-primary btn-sm " id="new_button">New</button>
-                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="edit_button">Edit</button>
-                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="delete_button">Delete</button>
+            <div class="row"  role="group" id ="buttonGroup">
+                <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addLocation">New</button>
+                <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editLocation">Edit</button>
             </div>
         </div>
         <div class = "row" id="locCards">
@@ -98,11 +97,13 @@
         {% endfor %}
 {% endfor %}
 
+
+<!----- General Location Modals/Tables -->
 <div class="modal" id = 'newLocationForm' tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Room</h5>
+        <h5 class="modal-title" id="newModalTitle">Room</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -111,32 +112,147 @@
       <div class="modal-body">
           <form>
           <div class="form-group">
-            <label for="buildingLoc">Building</label>
-              <div id = "buildingLoc" class="input-group mb-3">
-                  <select class="custom-select" id="inputGroupSelect01">
-                    <option selected id ="selectedLoc"></option>
-                      {% for loc in rooms %}
-                        {% for building, roomNums  in loc.items %}
-                            <option value="{{building}}">{{building}}</option>
-                        {% endfor %}
-                      {% endfor %}
-                  </select>
-                </div>
-          </div>
-          <div class="form-group">
             <label for="roomNumber">Room Number</label>
-            <input  type="text" class="form-control" id="roomNumber" placeholder="">
+            <input  type="text" class="form-control" id="roomNumber">
           </div>
         </form>
       </div>
 
       <div class="modal-footer">
+        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="deleteRoom"  data-dismiss="modal" data-target="#removeLocation" onclick="removeLocation(this.id)">Delete</button>
         <button type="button" class="btn btn-primary">Save</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="newCancelButton">Close</button>
       </div>
     </div>
   </div>
 </div>
+
+
+
+<!---------- Add a new Building ---------->
+<div class="modal"  id ="addLocation" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Track New Building</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="locationID">Building Name</label>
+              <input type="text" class="form-control" id="locationID">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--------END OF ADDING NEW BUILDING MODAL ------------------->
+
+<!---------------------- Edit a Building Modal ------------------------->
+<div class="modal"  id ="editLocation" tabindex="-1" role="dialog">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Existing Building</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+            <div class="input-group mb-3">
+                <div class="form-group">
+              <label for= "curr" >Location to Edit</label>
+              <select id = 'curr' class="custom-select" onclick='editBuilding();'>
+                <option selected >Select...</option>
+                  {% for loc in locations %}
+                    <option  value="{{loc.location}}">{{loc.location}}</option>
+                  {% endfor %}
+              </select>
+
+                  <label class = 'mt-3' for="newName">New Name</label>
+                  <input type="text" onkeypress='editBuilding();' class="form-control" id="newName" disabled>
+                </div>
+            </div>
+
+
+    <div class="input-group mb-2 mr-sm-2">
+    <div class="input-group-prepend">
+      <div class="input-group-text">Modify</div>
+    </div>
+    <input type="text" class="form-control" id="modifiedVersion" disabled>
+  </div>
+
+  <div class="form-check mb-2 mr-sm-2">
+    <input class="form-check-input" type="checkbox" id="confirmChange" disabled>
+    <label class="form-check-label" for="confirmChange">
+      Confirm Modification
+    </label>
+  </div>
+
+</form>
+      </div>
+      <div class="modal-footer">
+          <button type="button" id='deleteName' class="btn btn-danger mr-auto"  data-dismiss='modal'
+                  data-toggle="modal"  data-target="#removeLocation"
+                  onclick='removeLocation(this.id)' disabled>
+
+              Delete
+
+          </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button id = 'updateName' type="button" class="btn btn-primary" disabled>Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!------ END OF EDITING BUILDING MODAL ---------------->
+
+
+<!--- CONFIRM REMOVAL LOC MODAL -->
+<div class="modal" tabindex="-1" role="dialog" id="removeLocation">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Remove Building</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+        <div class="input-group mb-2 mr-sm-2">
+         <div class="input-group-prepend">
+          <div class="input-group-text">Remove</div>
+           </div>
+          <input type="text" class="form-control" id="toDelete" disabled>
+        </div>
+          <div class="form-check mb-2 mr-sm-2">
+            <input class="form-check-input" type="checkbox" id="confirmDeletion" disabled>
+            <label class="form-check-label" for="confirmChange">
+              Confirm Removal
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" >
+        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="deleteLoc" >Delete</button>
+        <button type="button" class="btn btn-secondary ml-auto" data-dismiss="modal"data-toggle='modal' >Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--- END OF CONFIRM REMOVAL MODAL -->
 
 
 {% endblock %}

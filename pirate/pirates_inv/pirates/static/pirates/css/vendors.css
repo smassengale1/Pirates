@@ -1,31 +1,84 @@
-
-
-.results tr[visible='false'],
-.no-result{
-  display:none;
-}
-
-.results tr[visible='true']{
-  display:table-row;
-}
-
-.counter{
-  padding:8px;
-  color:#ccc;
-}
-
 .container {
+    justify-content: center;
+    align-items: center;
+}
+
+#v_locCards {
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.d-none{
-    border-style: solid;
-    border-color: red;
+#v_new_button{
+    background-color:#36832B;
+    border-color: #36832B
+
+}
+#v_new_button:hover{
+        background-color: #1A4D12;
+        border-color: #1A4D12;
 }
 
-label {
+
+#v_delete_button{
+    background-color: #B5333B;
+    border-color: #B5333B;
+}
+#v_delete_button:hover{
+        background-color: #6C1218;
+        border-color: #6C1218;
+}
+
+#v_edit_button{
+    background-color: #216BC0;
+    border-color: #216BC0;
+}
+#v_edit_button:hover{
+        background-color: #10437D;
+        border-color: #10437D;
+}
+
+
+#v_buttonGroup {
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+
+#rooms {
+    align-items: center;
+    justify-content: center;
+
+}
+
+
+
+.modal-header,
+    .modal-footer{
+        background-color: #635F5E;
+        color: #EEEEEE;
+
+ }
+
+.modal-body{
+    background-color: #BBB7B7;
+    color: #3C3C3C;
     font-weight: bold;
 }
+
+
+.card-body{
+    text-align: center;
+    color: #DBDADA;
+}
+
+.list-group-item {
+    background-color: #7C7C7C;
+    color: black;
+}
+
+
+

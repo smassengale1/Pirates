@@ -16,15 +16,15 @@ class Asset(models.Model):
 
 
 class Vendor(models.Model):
-    vendor_asset_type = models.CharField(db_column='VendorAssetType', max_length=255)
-    vendor_asset_brand = models.CharField(db_column='VendorAssetBrand', max_length=255)
-    vendor_asset_model = models.CharField(db_column='VendorAssetModel', max_length=255)
-    vendor_asset_vendor = models.CharField(db_column='VendorAssetVendor', max_length=255)
-    vendor_asset_quantity_bought = models.IntegerField (db_column='VendorAssetQuantityBought', default= -0)
-    vendor_asset_purchase_month = models.IntegerField(db_column='VendorAssetPurchaseMonth', null = True)
-    vendor_asset_purchase_year = models.IntegerField(db_column='VendorAssetPurchaseYear', null=True)
-    vendor_asset_replacement_month = models.IntegerField(db_column='VendorAssetReplacementMonth', default = 0)
-    vendor_asset_replacement_year = models.IntegerField(db_column='VendorAssetReplacementYear', default = 0)
+    v_type = models.CharField(db_column='VendorAssetType', max_length=255)
+    v_brand = models.CharField(db_column='VendorAssetBrand', max_length=255)
+    v_model = models.CharField(db_column='VendorAssetModel', max_length=255)
+    v_vendor = models.CharField(db_column='VendorAssetVendor', max_length=255)
+    v_qb = models.IntegerField (db_column='VendorAssetQuantityBought', default= -0)
+    v_pm = models.IntegerField(db_column='VendorAssetPurchaseMonth', null = True)
+    v_py = models.IntegerField(db_column='VendorAssetPurchaseYear', null=True)
+    v_rm = models.IntegerField(db_column='VendorAssetReplacementMonth', default = 0)
+    v_ry = models.IntegerField(db_column='VendorAssetReplacementYear', default = 0)
 
     class Meta:
         db_table = 'vendor'

@@ -22,57 +22,73 @@ class vendors(View):
 
 
 
-        device_list = []
-        vendor_list = []
 
-        districtDevices = Vendor.objects.order_by().values('vendor_asset_type').distinct()
+        model_list = []
+        vendor_list = []
+        v_stats = []
+
+
+        device_info = []
+
+        districtDevices = Vendor.objects.order_by().values('v_type').distinct()
 
 
         # The first two loops gets Asset Types [Projector, Chromebook, Laptop, ect...]
         for devices in districtDevices:
+            model_list = []
             for colName, assetType in devices.items():
-                districtModels = Vendor.objects.filter(vendor_asset_type=assetType).values('vendor_asset_model').distinct()
+                districtModels = Vendor.objects.filter(v_type=assetType).values('v_model').distinct()
+                vendorCount = Vendor.objects.filter(v_type = assetType).values('v_vendor').distinct().count()
+
+                vendor_list.append({
+                    'device' : assetType,
+                    'count'  : vendorCount,
+                })
+
+                #models_info = []
                 for models in districtModels:
+                    models_info = []
                     for colName, assetModel in models.items():
-                        districtVendors = Vendor.objects.filter(vendor_asset_model = assetModel).values('vendor_asset_vendor', 'vendor_asset_quantity_bought',
-                                                                                                         'vendor_asset_purchase_month', 'vendor_asset_purchase_year',
-                                                                                                         'vendor_asset_replacement_month', 'vendor_asset_replacement_year')
-                        t = []
+
+                        districtVendors = Vendor.objects.filter(v_model = assetModel).values('v_vendor', 'v_brand','v_qb', 'v_pm', 'v_py', 'v_rm', 'v_ry')
+
+
+
                         for vendors in districtVendors:
-                            t= {
+                            device_info = {
                                 'v_type': assetType,
-                                'v_name': vendors['vendor_asset_vendor'],
-                                'v_qb': vendors['vendor_asset_quantity_bought'],
-                                'v_pm': vendors['vendor_asset_purchase_month'],
-                                'v_py': vendors['vendor_asset_purchase_year'],
-                                'v_rm': vendors['vendor_asset_replacement_month'],
-                                'v_ry': vendors['vendor_asset_replacement_year'],
+                                'v_model': assetModel,
+                                'v_brand': vendors['v_brand'],
+                                'v_name': vendors['v_vendor'],
+                                'v_qb': vendors['v_qb'],
+                                'v_pm': vendors['v_pm'],
+                                'v_py': vendors['v_py'],
+                                'v_rm': vendors['v_rm'],
+                                'v_ry': vendors['v_ry'],
 
                             }
 
-                            if assetModel not in model_list:
-                                model_list.append(assetModel)
-                                device_info['v_model'] = assetModel
+                            models_info.append(device_info)
 
-                            myDict.append({
-                                str(assetType) : t
-                            })
+                        model_list .append(models_info)
 
-        v_stats.append({
-            'Chromebook' : Chromebook_dict,
-            'Laptop' : Laptop_dict,
-            'Desktop': Desktop_dict,
-            'Projector': Projector_dict,
-            'Document Camera' : documentCam_dict,
-            'Smart Board' : smartBoard_dict,
-            'Security Camera': securityCam_dict,
-            'Misc' : Misc_dict,
+                v_stats.append({
+                    str(assetType): model_list
+                })
 
-        })
+
+
+        for item in v_stats:
+            for type, col in item.items():
+                print(type)
+                for x in col:
+                    print('i')
+
 
         context = {
             'page_title': page_title,
             'vendors': v_stats,
+            'vendorCount': vendor_list,
         }
 
 

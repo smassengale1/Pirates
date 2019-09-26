@@ -2,6 +2,7 @@ function showDate(){
     var rd = document.getElementById('replacementDate')
 
     $('#purchaseDate').keyup(function(){
+
             let date = this.value
 
             if (date.length > 1){
@@ -10,187 +11,132 @@ function showDate(){
 
                 switch(month){
                     case '01' :
-                        replacementMonth = 'January';
+                        month = 'January';
                         break;
                     case '02':
-                        replacementMonth = 'February';
+                        month = 'February';
                         break;
                     case '03':
-                        replacementMonth = 'March';
+                        month = 'March';
                         break;
                     case '04':
-                        replacementMonth = 'April';
+                        month = 'April';
                         break;
                     case '05':
-                        replacementMonth = 'May';
+                        month = 'May';
                         break;
                     case '06':
-                        replacementMonth = 'June';
+                        month = 'June';
                         break;
                     case '07':
-                        replacementMonth = 'July';
+                        month = 'July';
                         break;
                     case '08':
-                        replacementMonth = 'August';
+                        month = 'August';
                         break;
                     case '09':
-                        replacementMonth = 'September';
+                        month = 'September';
                         break;
                     case '10':
-                        replacementMonth = 'October';
+                        month = 'October';
                         break;
                     case '11':
-                        replacementMonth = 'November';
+                        month = 'November';
                         break;
                     case '12':
-                        replacementMonth = 'December';
+                        month = 'December';
                         break;
                     default:
-                        replacementMonth = '';
+                        month = '';
                         break;
 
                 }
                 replacementYear = year + 5
 
-                rd.value = replacementMonth + " " + replacementYear
+                rd.value = month + " " + replacementYear
 
             }
-
     })
+}
 
 
+function editClass(d_type, d_brand, d_model, d_vendor, d_qb, d_pm, d_py, d_rm, d_ry, id){
+
+    let defaultType = document.getElementById("selectedType");
+    let defaultBrand = document.getElementById("deviceBrand");
+    let defaultModel = document.getElementById("deviceModel");
+    let defaultVendor = document.getElementById("deviceVendor");
+    let defaultQb = document.getElementById("quantityBought");
+    let defaultPurchaseD = document.getElementById('purchaseDate');
+    let defaultReplacementD = document.getElementById('replacementDate');
+
+    let optionsType = document.getElementById(d_type)
+
+    if (optionsType.value === d_type)
+       optionsType.style.display = "none";
+
+    if(d_pm.length === 1)
+       d_pm = 0 + d_pm
 
 
+    getPdate = `${d_py}-${d_pm}`
+    getRdate = convertMonth(d_rm) + ' ' + d_ry;
 
+
+    defaultType.innerHTML = d_type;
+    defaultBrand.value = d_brand;
+    defaultModel.value = d_model;
+    defaultVendor.value = d_vendor;
+    defaultQb.value = d_qb;
+    defaultPurchaseD.defaultValue = getPdate
+    defaultReplacementD.value = getRdate;
 
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function addtoDate(){
-
-    let purchaseDate = document.getElementById('purchaseDate').value;
-    let year = parseInt(purchaseDate.slice(0,4))
-    let month = purchaseDate.slice(5,7)
-
-   let replacementYear = year + 5
-   let replacementMonth = ''
-   
-
-    switch(month){
-        case '01' :
-            replacementMonth = 'January';
+function convertMonth(m){
+    switch(m){
+        case '1':
+            month = 'January';
             break;
-        case 02:
-            replacementMonth = 'February';
+        case '2':
+            month = 'February';
             break;
-        case 03:
-            replacementMonth = 'March';
+        case '3':
+            month = 'March';
             break;
-        case 04:
-            replacementMonth = 'April';
+        case '4':
+            month = 'April';
             break;
-        case 05:
-            replacementMonth = 'May';
+        case '5':
+            month = 'May';
             break;
-        case 06:
-            replacementMonth = 'June';
+        case '6':
+            month = 'June';
             break;
-        case 07:
-            replacementMonth = 'July';
+        case '7':
+            month = 'July';
             break;
-        case 08:
-            replacementMonth = 'August';
+        case '8':
+            month = 'August';
             break;
-        case 09:
-            replacementMonth = 'September';
+        case '9':
+            month = 'September';
             break;
-        case 10:
-            replacementMonth = 'October';
+        case '10':
+            month = 'October';
             break;
-        case 11:
-            replacementMonth = 'November';
+        case '11':
+            month = 'November';
             break;
-        case 12:
-            replacementMonth = 'December';
+        case '12':
+            month = 'December';
             break;
         default:
-            replacementMonth = '';
+            month = '';
             break;
-
     }
 
-    $('#replacementDate').append(`{$replacementMonth} ${replacementYear}`)
-
-
+    return month
 }
-function filterVendors(){
-    let input, filter, table, tr, td, i, txtValue;
-    for(table = 0; table < 7; table++){
-        let name = 'myInput' + String(table)
-        document.getElementById(name)
-    }
-    document.getElementById("v_table");
-    tr = table.getElementsByTagName("tr");
-
-
-
-
-    for (i=0; i<tr.length; i++){
-        vendorName = tr[i].getElementsByTagName("td")[0];
-        vendorID = tr[i].getElementsByTagName("td")[1];
-
-
-
-        if(vendorName || vendorID){
-            vName = vendorName.textContent || vendorName.innerText;
-            isvName = vName.toLowerCase().indexOf(input.toLowerCase())>-1;
-
-            vID = vendorID.textContent || vendorID.innerText;
-            isvID = vID.indexOf(input)>-1;
-
-            if(isvName || isvID){
-                tr[i].style.display="";
-            }
-            else{
-                tr[i].style.display ="none"
-            }
-        }
-    }
-}
-function addVendor(){
-    vendor_name = document.getElementById("vendorName").value;
-    vendor_id =  document.getElementById("vendorID").value;
-
-    ajax_queue.ajax_dispatch({
-        type: 'POST',
-        url: '/dashboard/vendors',
-        data: {
-            'vendorName': vendor_name,
-            'vendorID': vendor_id,
-
-        },
-        success: function () {
-        },
-        error: function (e) {
-            console.log(e);
-        },
-        dataType: "json",
-        contentType: "application/json"
-    });
-}
-
