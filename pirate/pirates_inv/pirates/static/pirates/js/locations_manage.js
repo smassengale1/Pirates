@@ -69,28 +69,28 @@ function editBuilding(){
 
 
 
-function removeLocation(id){
+function removeLocation(type){
 
-    let checkBox = document.getElementById('confirmDeletion');
-
-
-
-    if(id = 'deleteRoom'){
-        //Get the data pre-filled in text box
-        let area = document.getElementById('roomNumber').value
-    }
-    else{
-       let area = document.getElementById('curr').value
-       }
+    let checkBox = document.getElementById('confirmDeletion').isChecked;
+    let deleteButton = document.getElementById('deleteLoc')
+    let getBuilding = document.getElementById('curr').value
 
 
 
+    if(type === 'room')
+        var area = document.getElementById('roomNumber').value
+
+    else
+        //Building to Delete
+        var area = getBuilding
 
 
+    $('#confirmDeletion').click(function(){
+        $('#deleteLoc').toggle()
 
-
-    document.getElementById('toDelete').value = area
-    checkBox.disabled = false;
+    })
+    document.getElementById('toDelete').value = getBuilding +' ---> ' + area
+    //checkBox.disabled = false;
 
 
 

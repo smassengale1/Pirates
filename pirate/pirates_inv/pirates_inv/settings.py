@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pirates',
         'USER': 'root',
-        'PASSWORD': 'toor',
+        'PASSWORD': 'spartandb',
         'HOST': 'localhost',
         'PORT': '3306',
     }
