@@ -3,34 +3,46 @@
     align-items: center;
 }
 
-#locCards {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-
-
-#buttonGroup {
+#asset_buttonGroup {
   margin: auto;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
-
-#rooms {
-    align-items: center;
+#assetTypes {
+    height: 100%;
+    display: flex;
     justify-content: center;
-
+    align-items: center;
 }
 
-td:hover {
-    background-color: #424040;
-    color: #EEEEEE;
+.deviceInfo{
+    text-align: center;
 }
+
+
+thead{
+    font-size: 18px;
+    text-align: center;
+    background-color: #747571;
+    color: #2e2d2d
+}
+
+td {
+    font-size: 15 px;
+}
+
+
+#bCount {
+    text-align: center;
+}
+
+.table-hover tbody tr:hover td {
+    background: #7a7777;
+    font-weight: 900;
+}
+
 
 .modal-header,
     .modal-footer{
@@ -50,11 +62,3 @@ td:hover {
     text-align: center;
     color: #DBDADA;
 }
-
-.list-group-item {
-    background-color: #7C7C7C;
-    color: black;
-}
-
-
-

@@ -7,12 +7,11 @@
 
 
 {% block container %}
-    <div class="container">
+    <div class="container-flex">
         <div class = "row">
-            <div class="btn-group btn-group-lg"  role="group" id ="v_buttonGroup">
-                <button type="button" class="btn btn-primary btn-sm " data-toggle="modal" data-target="#addDevice" id="v_new_button">New</button>
-                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="v_edit_button">Edit</button>
-                <button type="button" class="btn btn-primary btn-sm btn-secondary" id="v_delete_button">Delete</button>
+            <div class="row"  role="group" id ="v_buttonGroup">
+                <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addDevice">New</button>
+                <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editDevice">Edit</button>
             </div>
         </div>
         <div class = "row" id="v_locCards">
@@ -93,13 +92,9 @@
 </table>
     </div>
     <div class="modal-footer">
-          <div class="float-left">
-                <button id ='new_room' type="button" class="btn btn-success" onclick="editClass('{{buildings}}', this.id);" data-dismiss="modal" data-toggle="modal" data-target="#newLocationForm">New</button>
-          </div>
-          <div class="float-right">
-              <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-          </div>
-      </div>
+      <button type="button" class="btn btn-secondary mr-auto"  data-dismiss="modal">Cancel</button>
+      <button type="button" id='new_room' class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#addVendor">Add Vendor</button>
+    </div>
 
     </div>
   </div>
@@ -110,7 +105,7 @@
 
 
 <!-- New Vendor Form -->
-<div class="modal fade" id="addVendor" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="addVendor" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -170,16 +165,21 @@
             </div>
          </div>
     </div>
-    <button class="btn btn-primary" type="submit">Add Vendor</button>
-</form>
+    </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" data-dismiss="modal" data-target="#removeDevice" id="deleteVendor" onclick="removeDevice('vendor');">Delete Vendor</button>
+        <button type="submit" class="btn btn-primary">Add Vendor</button>
+    </div>
+
        </div>
       </div>
      </div>
-    </div>
 
 
+<
 
-
+<!------------------------ Add New Device Modal --------------------------------->
 <div class="modal"  id ="addDevice" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
@@ -204,8 +204,104 @@
     </div>
   </div>
 </div>
+<!--------- End of Add New Device Modal ----------------------->
+
+<!---------------------- Edit a Device Modal ------------------------->
+<div class="modal"  id ="editDevice" tabindex="-1" role="dialog">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Existing Device</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+            <div class="input-group mb-3">
+                <div class="form-group">
+              <label for= "currDevice" >Device to Edit</label>
+              <select id = 'currDevice' class="custom-select" onclick='editDevice();'>
+                <option selected >Select...</option>
+                  {% for v in vendorCount %}
+                    <option  value="{{v.device}}">{{v.device}}</option>
+                  {% endfor %}
+              </select>
+
+                  <label class = 'mt-3' for="newName">New Name</label>
+                  <input type="text" onkeypress='editDevice();' class="form-control" id="newName" disabled>
+                </div>
+            </div>
 
 
+    <div class="input-group mb-2 mr-sm-2">
+    <div class="input-group-prepend">
+      <div class="input-group-text">Modify</div>
+    </div>
+    <input type="text" class="form-control" id="modifiedVersion" disabled>
+  </div>
+
+  <div class="form-check mb-2 mr-sm-2">
+    <input class="form-check-input" type="checkbox" id="confirmChange" checked>
+    <label class="form-check-label" for="confirmChange" >
+      Confirm Modification
+    </label>
+  </div>
+
+</form>
+      </div>
+      <div class="modal-footer">
+          <button type="button" id='deleteName' class="btn btn-danger mr-auto"  data-dismiss='modal'
+                  data-toggle="modal"  data-target="#removeDevice"
+                  onclick='removeDevice("deviceType")'>
+
+              Delete
+
+          </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button id = 'updateName' type="button" class="btn btn-primary" id="updateName">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!------ END OF EDITING BUILDING MODAL ---------------->
+
+<!--- CONFIRM REMOVAL Device MODAL -->
+<div class="modal" tabindex="-1" role="dialog" id="removeDevice">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Remove Device</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+        <div class="input-group mb-2 mr-sm-2">
+         <div class="input-group-prepend">
+          <div class="input-group-text">Remove</div>
+           </div>
+          <input type="text" class="form-control" id="toDelete" disabled>
+        </div>
+          <div class="form-check mb-2 mr-sm-2">
+            <input class="form-check-input" type="checkbox" id="confirmDeletion" checked>
+            <label class="form-check-label" for="confirmChange">
+              Confirm Removal
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" >
+        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="deleteDevice" >Delete</button>
+        <button type="button" class="btn btn-secondary ml-auto" data-dismiss="modal"data-toggle='modal' >Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--- END OF CONFIRM REMOVAL MODAL -->
 
 
 {% endblock %}

@@ -60,6 +60,7 @@ function showDate(){
 }
 
 
+
 function editClass(d_type, d_brand, d_model, d_vendor, d_qb, d_pm, d_py, d_rm, d_ry, id){
 
     let defaultType = document.getElementById("selectedType");
@@ -71,6 +72,11 @@ function editClass(d_type, d_brand, d_model, d_vendor, d_qb, d_pm, d_py, d_rm, d
     let defaultReplacementD = document.getElementById('replacementDate');
 
     let optionsType = document.getElementById(d_type)
+
+    let deleteButton = document.getElementById('deleteVendor')
+
+    deleteButton.style.display = "block";
+
 
     if (optionsType.value === d_type)
        optionsType.style.display = "none";
@@ -139,4 +145,75 @@ function convertMonth(m){
     }
 
     return month
+}
+
+
+function editDevice(){
+    let curr = document.getElementById('currDevice').value
+    let newName = document.getElementById('newName');
+    let showModi = document.getElementById('modifiedVersion');
+    let checkBox = document.getElementById('confirmChange');
+
+    let updateButton = document.getElementById('deleteName')
+    let deleteButtonOne = document.getElementById('updateName')
+
+     $('#currDevice').click(function(){
+        showModi.value = this.value + ' --> ' + curr
+
+        if(this.value === 'Select...'){
+            newName.disabled = true;
+            checkBox.disabled = true
+        }
+        else
+            newName.disabled = false;
+   })
+
+
+// This updates the modified box to show the modified version
+   $('#newName').keyup(function(){
+    showModi.value = curr + ' --> ' + this.value
+
+    if(curr != 'Select...'){
+        checkBox.disabled = false;
+        this.disabled = false;
+       }
+    else{
+        checkBox.disabled = true;
+        }
+    })
+
+}
+
+
+function removeDevice(type){
+    let checkBox = document.getElementById('confirmDeletion').isChecked;
+    let deleteButton = document.getElementById('deleteDevice')
+
+
+    if(type === 'vendor'){
+        let vendor = document.getElementById('deviceVendor').value
+        let make = document.getElementById('deviceBrand').value
+        let model = document.getElementById('deviceModel').value + '(s)'
+        let qBought = document.getElementById('quantityBought').value
+        let pDate = document.getElementById('purchaseDate').value
+
+        let year = parseInt(pDate.slice(0,4))
+        let month = parseInt(pDate.slice(5,7))
+
+        month = convertMonth(month.toString())
+
+        removeMe = `${vendor} | ${qBought} ${make} ${model} | ${month} ${year}`
+
+    }
+    else
+        removeMe = document.getElementById('currDevice').value
+
+
+    $('#confirmDeletion').click(function(){
+            $('#deleteDevice').toggle()
+
+    })
+
+
+    document.getElementById('toDelete').value = removeMe
 }

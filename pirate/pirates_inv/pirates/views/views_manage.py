@@ -5,7 +5,7 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import permission_required
 from django.views import View
 from pirates.models import *
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from django.db.models import Sum
 from django.http import Http404
@@ -78,13 +78,6 @@ class vendors(View):
 
 
 
-        for item in v_stats:
-            for type, col in item.items():
-                print(type)
-                for x in col:
-                    print('i')
-
-
         context = {
             'page_title': page_title,
             'vendors': v_stats,
@@ -153,3 +146,198 @@ class locations(View):
 
 
         return render(request, page_template, context)
+
+
+@method_decorator(decorators, name='dispatch')
+class assets(View):
+    def get(self, request, *args, **kwargs):
+        page_template = 'pirates/elements/assets.html'
+        page_title = 'Dover Technology Assets'
+
+        devices = []
+        deviceCount = []  #Holds Device && Device Count
+        assetBuildings = []
+
+        #Get the Asset Types
+        assetType = Asset.objects.order_by().values('a_type').distinct()
+        assetBuilding = Asset.objects.order_by().values('a_building').distinct()
+
+        for types in assetType:
+            for colName, asset in types.items():
+                assetCount = Asset.objects.filter(a_type = asset).values('a_type').count()
+                buildingCount = []
+                for building in assetBuilding:
+                    for colName, loc in building.items():
+                        locationsCount = Asset.objects.filter(a_building = loc).filter(a_type = asset).values('a_building').count()
+
+
+
+                        buildingCount.append({
+                            'building' : loc,
+                            'count' : locationsCount
+                        })
+
+                assetBuildings.append({
+                    str(asset): buildingCount
+                })
+
+                deviceCount.append({
+                    'type': asset,
+                    'count' : assetCount
+                })
+
+            roomCount = self.getLocations()
+            roomDevices = self.getAssetLocations()
+
+        context = {
+            'types': devices,
+            'deviceCount': deviceCount,
+            'roomCount': roomCount,
+            'locations': assetBuildings,
+            'roomDevices': roomDevices,
+        }
+
+        return render(request, page_template, context)
+
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+
+    def getLocations(self):
+        distictRooms = []
+
+        districtLocations = Location.objects.order_by().values('location_building').distinct()
+
+
+
+        for loc in districtLocations:
+            for colName, building in loc.items():
+                roomCount = Location.objects.filter(location_building = building).values('location_room').count()
+                locationRooms = Location.objects.filter(location_building = building).values('location_room')
+
+                r = []
+                for rooms in locationRooms:
+                    r.append(rooms)
+
+                distictRooms.append({
+                    str(building): r,
+                })
+
+
+
+        return distictRooms
+
+
+    def getAssetLocations(self):
+
+        districtBuildings = Asset.objects.order_by().values('a_building').distinct()
+        assetBreakdown = []
+
+
+        buildingSet = []
+        for b in districtBuildings:
+            for colName, building in b.items():
+                districtDevices = Asset.objects.filter(a_building=building).values('a_type')
+                typeSet = []
+                for t in districtDevices:
+                    for colNam, type in t.items():
+                        districtModels = Asset.objects.filter (a_building=building).filter(a_type=type).values('a_brand', 'a_model').distinct()
+                        modelSet = []
+                        for m in districtModels:
+                            districtRooms = Asset.objects.filter(a_building=building).filter(a_model=m['a_model'])
+                            roomSet = []
+
+                            totalDict = districtRooms.aggregate(Sum('a_quantity'))
+                            totalRooms = districtRooms.values('a_room').count
+
+
+
+
+
+                            deviceSet=[]
+                            for set in districtRooms.values('a_room', 'a_quantity'):
+                                deviceSet.append({
+                                    'room': set['a_room'],
+                                    'quantity': set['a_quantity'],
+                                })
+
+
+                            modelSet.append({
+                               'model': m['a_model'],
+                               'brand': m['a_brand'],
+                               'deviceCount': totalDict['a_quantity__sum'],
+                               'roomCount': totalRooms,
+                               'roomLocations': deviceSet
+                            })
+
+
+
+
+
+                            roomSet.append({
+                                m['a_model'] : deviceSet,
+                            })
+
+                        typeSet.append({
+                            type:modelSet,
+                            'rooms': roomSet
+                        })
+
+                buildingSet.append({
+                    building:typeSet
+                })
+
+
+
+
+
+        assetBreakdown.append({
+            'building' : buildingSet
+        })
+
+
+
+        return assetBreakdown
+
+
+
+
+
+##############################Delete############################################
+@method_decorator(decorators, name='dispatch')
+class deviceBreakDown(View):
+    def get(self, request, *args, **kwargs):
+        page_template = 'pirates/elements/asset_breakdown.html'
+        return render(request, page_template)
+
+
+    def post(self, request, *args, **kwargs):
+        page_template = 'pirates/elements/asset_breakdown.html'
+
+        print(request.POST)
+
+        #deviceInfo = self.getInfo(deviceType)
+
+
+        return render(request, 'pirates/elements/asset_breakdown.html')
+
+
+    def getInfo(self, deviceType):
+        locCount = []
+
+        districtLoc = Asset.objects.order_by().values('a_building').distinct()
+
+        for qSet in districtLoc:
+            for colName, building in qSet.items():
+                deviceCount = Asset.objects.filter(a_building = building, a_type = deviceType).values().count()
+                print(deviceCount)
+
+            locCount.append({
+                'building': building,
+                'count' : deviceCount
+            })
+
+        return deviceCount
+

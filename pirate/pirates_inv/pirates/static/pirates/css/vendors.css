@@ -10,35 +10,6 @@
     align-items: center;
 }
 
-#v_new_button{
-    background-color:#36832B;
-    border-color: #36832B
-
-}
-#v_new_button:hover{
-        background-color: #1A4D12;
-        border-color: #1A4D12;
-}
-
-
-#v_delete_button{
-    background-color: #B5333B;
-    border-color: #B5333B;
-}
-#v_delete_button:hover{
-        background-color: #6C1218;
-        border-color: #6C1218;
-}
-
-#v_edit_button{
-    background-color: #216BC0;
-    border-color: #216BC0;
-}
-#v_edit_button:hover{
-        background-color: #10437D;
-        border-color: #10437D;
-}
-
 
 #v_buttonGroup {
   margin: auto;
@@ -52,6 +23,10 @@
     align-items: center;
     justify-content: center;
 
+}
+
+#deleteVendor{
+    display: none;
 }
 
 

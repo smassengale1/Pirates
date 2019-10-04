@@ -3,12 +3,12 @@ from django.db import models
 # Create your models here.
 
 class Asset(models.Model):
-    asset_type = models.CharField(db_column='AssetType', max_length=255)
-    asset_brand = models.CharField(db_column='AssetBrand', max_length=255)
-    asset_model = models.CharField(db_column='AssetModel', max_length=255)
-    asset_building = models.CharField(db_column='AssetBuilding', default='Technology', max_length=255)
-    asset_room = models.CharField(db_column='AssetRoom', default='TBD', max_length=255)
-    asset_quantity = models.IntegerField (db_column='AssetQuantity')
+    a_type = models.CharField(db_column='AssetType', max_length=255)
+    a_brand = models.CharField(db_column='AssetBrand', max_length=255)
+    a_model = models.CharField(db_column='AssetModel', max_length=255)
+    a_building = models.CharField(db_column='AssetBuilding', default='Technology', max_length=255)
+    a_room = models.CharField(db_column='AssetRoom', default='TBD', max_length=255)
+    a_quantity = models.IntegerField (db_column='AssetQuantity')
 
     class Meta:
         db_table = 'asset'
