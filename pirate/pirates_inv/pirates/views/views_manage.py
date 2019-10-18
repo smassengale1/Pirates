@@ -148,15 +148,186 @@ class locations(View):
         return render(request, page_template, context)
 
 
+
+
+def validate_building(request):
+    building = request.POST.get('building', None).strip()
+    type = request.POST.get('type', None)
+
+    if type == 'new_room':
+        room = request.POST.get('room', None).strip()
+        data = addRoom(building, room)
+
+    else:
+        data = addBuilding(building)
+
+    return JsonResponse(data, safe=False)
+
+
+
+def addBuilding(building):
+    exist = Location.objects.filter(location_building = building).exists()
+
+    data = {'exist' : exist}
+
+    if not exist:
+        if building != '':
+            data['isNull'] = False
+
+            print("Attempting to add <%s> to District Buildings" % building)
+
+            record = Location(location_building = building)
+            record.save()
+
+            print("Successfully added <%s> to District Buildings" % building)
+
+        else:
+            print("Error: Cannot add Null Entry")
+            data['isNull'] = True
+
+    else:
+        print("Error: %s already exists in District Building")
+
+
+    return data
+
+
+
+def addRoom(building, room):
+    exist = Location.objects.filter(location_building = building, location_room = room).exists()
+
+    data = {'exist' : exist}
+
+    if not exist:
+        if room != '':
+            data['isNull'] = False
+
+            print("Attempting to add <%s>: <%s>" % (building, room))
+
+            record = Location(location_building = building, location_room = room)
+            record.save()
+
+            print("Successfully add --> <%s>: <%s>" % (building, room))
+
+        else:
+            print("Error: Cannot add Null Entry")
+            data['isNull'] = True
+
+
+    else:
+        print("Error: %s: %s already exists." % (building, room))
+
+
+
+    return data
+
+
+
+
+
+
+
+
+def update_building(request):
+    oldName = request.POST.get('oldName', None).strip()
+    newName = request.POST.get('newName', None).strip()
+
+    exist = Location.objects.filter(location_building = newName).exists()
+
+    if not exist:
+        l = Location.objects.filter(location_building=oldName)
+        a = Asset.objects.filter(a_building = oldName)
+
+        print('Updating Location Building Name from %s to %s' % (oldName, newName))
+        for i in l:
+            i.location_building = newName
+            i.save()
+
+        print('Updating Assets where Building was %s to %s' % (oldName, newName))
+        for i in a:
+            i.a_building = newName
+            i.save()
+
+    else:
+        print("%s Already Exist" % newName)
+
+
+    data = {
+        'exist':exist
+    }
+
+    return JsonResponse(data, safe=False)
+
+
+def remove_building(request):
+    area = request.POST.get('area', None).strip()
+    type = request.POST.get('type', None)
+    building = request.POST.get('roomBuilding', None).strip()
+
+
+    if type == 'building':
+        print('Confirming %s is a Building' % area)
+        l = Location.objects.filter(location_building=area)
+        a = Asset.objects.filter(a_building=area)
+
+    else:
+        print('Confirming %s: %s is in Database' % (building, area))
+        building = request.POST.get('roomBuilding', None)
+        l = Location.objects.filter(location_building=building, location_room=area)
+        a = Asset.objects.filter(a_building=building, a_room=area)
+
+
+
+    if l.exists():
+        print('%s confirmed' % area)
+        data = {
+            'exist': True
+        }
+
+        if a.count() != 0:
+            print("Devices still assigned to %s" % area)
+            if type == 'building':
+                if not Location.objects.filter(location_building = 'Technology Office').exists() :
+                    print('Creating Temporary Storage')
+                    validate_building('Technology Office')
+
+                    building = 'Technology Office'
+
+            else:
+                if not Location.objects.filter(location_building = building, location_room = 'temp').exists():
+                    print('Creating Temporary Storage in %s: temp' % (building))
+                    #need to make validate rooms ready for this
+
+
+        for i in a:
+            i.a_building = building
+            i.a_room = 'temp'
+            i.save()
+
+    for loc in l:
+        loc.delete()
+
+
+
+    if l.exists():
+        data = {
+            'exist': False
+        }
+
+
+
+    return JsonResponse(data, safe=False)
+
+
 @method_decorator(decorators, name='dispatch')
 class assets(View):
     def get(self, request, *args, **kwargs):
         page_template = 'pirates/elements/assets.html'
         page_title = 'Dover Technology Assets'
 
-        devices = []
         deviceCount = []  #Holds Device && Device Count
         assetBuildings = []
+        assetList = []
 
         #Get the Asset Types
         assetType = Asset.objects.order_by().values('a_type').distinct()
@@ -164,6 +335,7 @@ class assets(View):
 
         for types in assetType:
             for colName, asset in types.items():
+                assetList.append(asset)
                 assetCount = Asset.objects.filter(a_type = asset).values('a_type').count()
                 buildingCount = []
                 for building in assetBuilding:
@@ -181,20 +353,29 @@ class assets(View):
                     str(asset): buildingCount
                 })
 
-                deviceCount.append({
-                    'type': asset,
-                    'count' : assetCount
-                })
+            deviceCount.append({
+                'type': asset,
+                'count' : assetCount
+            })
 
             roomCount = self.getLocations()
             roomDevices = self.getAssetLocations()
 
+
+        assetRooms = self.getAssetRooms()
+
+        vendors = self.getVendors(assetList)
+
+
+
         context = {
-            'types': devices,
             'deviceCount': deviceCount,
             'roomCount': roomCount,
             'locations': assetBuildings,
             'roomDevices': roomDevices,
+            'assetRooms' : assetRooms,
+            'vendors':vendors,
+
         }
 
         return render(request, page_template, context)
@@ -227,6 +408,9 @@ class assets(View):
 
 
 
+
+
+
         return distictRooms
 
 
@@ -254,8 +438,6 @@ class assets(View):
 
 
 
-
-
                             deviceSet=[]
                             for set in districtRooms.values('a_room', 'a_quantity'):
                                 deviceSet.append({
@@ -274,16 +456,13 @@ class assets(View):
 
 
 
+                    roomSet.append({
+                        m['a_model'] : deviceSet,
+                    })
 
-
-                            roomSet.append({
-                                m['a_model'] : deviceSet,
-                            })
-
-                        typeSet.append({
-                            type:modelSet,
-                            'rooms': roomSet
-                        })
+                    typeSet.append({
+                        type:modelSet,
+                    })
 
                 buildingSet.append({
                     building:typeSet
@@ -303,6 +482,94 @@ class assets(View):
 
 
 
+
+    def getAssetRooms(self):
+        assetRooms = []
+        districtBuildings = Asset.objects.order_by().values('a_building').distinct()
+        for buildings in districtBuildings:
+            buildingList=[]
+            for colName, building in buildings.items():
+                districtTypes = Asset.objects.filter(a_building=building).values('a_type').distinct()
+                typeList = []
+                for t in districtTypes:
+                    districtModels = Asset.objects.filter(a_building=building).filter(a_type=t['a_type']).values('a_model').distinct()
+                    modelList = []
+                    for m in districtModels:
+                        districtRooms = Asset.objects.filter(a_building=building).filter(a_type=t['a_type']).filter(a_model=m['a_model']).values('a_room', 'a_quantity')
+                        roomList = []
+                        for r in districtRooms:
+                            roomList.append({
+                                'room': r['a_room'],
+                                'quantity' : r['a_quantity']
+                            })
+
+                        modelList.append({
+                            m['a_model']:roomList
+                        })
+
+                    typeList.append({
+                        t['a_type'] : modelList
+                    })
+
+                buildingList.append({
+                    building : typeList
+                })
+
+            assetRooms.append({
+                'assetRooms': buildingList
+            })
+
+        return assetRooms
+
+
+    def getVendors(self, assetTypes):
+        districtVendors = Vendor.objects.order_by().values('v_vendor').distinct()
+        vendors = []
+        for type in assetTypes:
+            vendorList = []
+            for v in districtVendors:
+                districtPD = Vendor.objects.filter(v_type=type).filter(v_vendor=v['v_vendor']).values('v_pm', 'v_py')
+                if districtPD.count() != 0:
+                    pdList = []
+                    for pd in districtPD:
+                        pdList.append({
+                            'month' : pd['v_pm'],
+                            'year' : pd['v_py']
+                        })
+
+                    vendorList.append({
+                        v['v_vendor'] : pdList
+                    })
+
+            vendors.append({
+                type : vendorList
+            })
+
+        return vendors
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
+                        
+
+                        
 
 
 ##############################Delete############################################

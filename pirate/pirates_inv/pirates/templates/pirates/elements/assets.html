@@ -131,6 +131,33 @@
                 </div>
               </div>
           </div>
+
+          <div class="form-group">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="assetBrand">Vendor</label>
+                  <select class="custom-select mr-sm-2" id="assetVendor">
+                      <option value ='N/A'>N/A</option>
+                       {% for vendor in vendors %}
+                         {% for type, list in vendor.items %}
+                            {% for v in list %}
+                                {% for vendor, list1 in v.items %}
+                             <option value ='{{v}}'>{{vendor}}</option>
+                         {% endfor %}
+                       {% endfor %}
+                      {% endfor %}
+                      {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="assetModel">Purchase Date</label>
+                  <select class="custom-select mr-sm-2" id="assetRoom">
+                      <option value ='1'>Room</option>
+                  </select>
+                </div>
+              </div>
+          </div>
+
           <div class="form-row">
             <div class="col-md-3 mb-3">
               <label for="quantity">Quantity</label>
@@ -156,9 +183,8 @@
           {% for type in typeSet %}
 
             {% for assetType, modelSet in type.items %}
-                {{modelSet}}
 
-                <div class="modal"  tabindex="-1" role="dialog" id="{{b.0}}{{b.1}}_{{assetType}}_{{forloop.counter}}">
+               <div class="modal"  tabindex="-1" role="dialog" id="{{b.0}}{{b.1}}_{{assetType}}_{{forloop.counter}}">
                   <div class="modal-dialog modal-lg "  role="document">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -179,7 +205,7 @@
                            </thead>
                         {% for m in modelSet %}
                            <tbody>
-                              <tr id="{{b.0}}{{b.1}}_{{m.brand}}_{{m.model}}"   class="deviceInfo" data-target="#deviceRooms" data-toggle="modal">
+                              <tr id="{{b.0}}{{b.1}}_{{m.brand}}_{{m.model}}"  class="deviceInfo" data-target="#{{b.0}}{{b.1}}_{{assetType}}_{{m.model}}_{{forloop.parentloop.counter}}" data-toggle="modal" onclick="dataSelections({{vendors}})">
                                 <td colspan="1">{{m.brand}}</td>
                                 <td colspan="1">{{m.model}}</td>
                                 <td colspan="1">{{m.deviceCount}}</td>
@@ -209,18 +235,48 @@
 
 
 
-<div class="modal" tabindex="-1" role="dialog" id="deviceRooms">
+{% for devices in assetRooms %}
+  {% for colName, buildingList in devices.items %}
+    {% for building in buildingList %}
+      {% for b, typeList in building.items %}
+       {% for type in typeList %}
+         {% for t, modelList in type.items %}
+           {% for model in modelList %}
+             {% for m, roomList in model.items %}
+
+
+<h1>{{b.0}}{{b.1}}_{{t}}_{{m}}_{{forloop.counter}}</h1>
+<div class="modal" tabindex="-1" role="dialog" id="{{b.0}}{{b.1}}_{{t}}_{{m}}_{{forloop.counter}}">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
+        <h5 class="modal-title">Rooms for {{m}} {{t}}s</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p>Modal body text goes here.</p>
+        <table class="table table-bordered table-striped table-hover" id="roomData" style="table-layout: fixed"> <!--Makes Columns Even -->
+           <thead>
+           <tr>
+             <th>Room</th>
+             <th>Quantity</th>
+             <th>Vendor</th>
+             <th>Purchase Date</th>
+           </tr>
+           </thead>
+        {% for r in roomList%}
+           <tbody>
+              <tr id="{{b.0}}{{b.1}}_{{m.brand}}_{{m.model}}"  class="deviceInfo" data-target="#{{b.0}}{{b.1}}_{{assetType}}_{{m.model}}_{{forloop.parentloop.counter}}" data-toggle="modal">
+                <td colspan="1">{{r.room}}</td>
+                <td colspan="1">{{m.model}}</td>
+                <td colspan="1">{{m.deviceCount}}</td>
+                <td colspan="1">{{m.roomCount}}</td>
+              </tr>
+           </tbody>
+          </table>
       </div>
+        {% endfor %}
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">Save changes</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -228,6 +284,16 @@
     </div>
   </div>
 </div>
+
+    {% endfor %}
+  {% endfor %}
+{% endfor %}
+     {% endfor %}
+    {% endfor %}
+  {% endfor %}
+{% endfor %}{% endfor %}
+
+
 
 {% endblock container %}
 

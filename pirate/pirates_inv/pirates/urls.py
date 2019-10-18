@@ -28,10 +28,13 @@ urlpatterns = [
     path('', pirate_views.dashboard, name='dashboard'),
     path('dashboard/', pirate_views.dashboard, name = 'dashboard'),
     path('dashboard/assets', manage_views.assets.as_view(), name = 'assets'),
-    path('dashboard/assets/(?P<device>\s+)/$', manage_views.deviceBreakDown.as_view(), name = 'assetBreakDown'), #assets/chromebook
     path('dashboard/vendors', manage_views.vendors.as_view(), name = 'vendors'),
     path('dashboard/locations', manage_views.locations.as_view(), name = 'locations'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
+
+    path('ajax/validate_building', manage_views.validate_building),
+    path('ajax/remove_building', manage_views.remove_building),
+    path('ajax/update_building', manage_views.update_building),
 
 ]

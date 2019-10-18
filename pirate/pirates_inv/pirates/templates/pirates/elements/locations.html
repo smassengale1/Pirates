@@ -43,7 +43,7 @@
 
 
                   <div class="modal-header" >
-                    <h5 class="modal-title" id = 'buildingNameTitle'>{{buildings}}</h5>
+                    <h5 class="modal-title" id = 'buildingNameTitle_{{forloop.counter}}'>{{buildings}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -80,7 +80,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary mr-auto"  data-dismiss="modal">Cancel</button>
-  <button type="button" id='new_room' class="btn btn-primary" onclick="editClass('{{buildings}}', this.id);" data-dismiss="modal" data-toggle="modal" data-target="#newLocationForm">Add Room</button>
+  <button type="button" id='new_room' class="btn btn-primary" onclick="editClass('{{buildings}}', 'new_room');" data-dismiss="modal" data-toggle="modal" data-target="#newLocationForm">Add Room</button>
 </div>
 
                 </div>
@@ -110,13 +110,15 @@
           <div class="form-group">
             <label for="roomNumber">Room Number</label>
             <input  type="text" class="form-control" id="roomNumber">
+            <h1 id="newType" style="display:none"></h1>
+              <div class="alert alert-danger mt-1 mb-1" id='errorMessageRoom' role="alert" style="display:none"></div>
           </div>
         </form>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-danger mr-auto" data-toggle="modal"   data-dismiss="modal" data-target="#removeLocation" id="deleteVendor" onclick="removeLocation('room');">Delete</button>
-        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" onclick="validateBuilding();">Save</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="newCancelButton">Close</button>
       </div>
     </div>
@@ -138,15 +140,16 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="locationID">Building Name</label>
-              <input type="text" class="form-control" id="locationID">
+                <label for="newBuildingName">Building Name</label>
+                <input type="text" class="form-control" id="newBuildingName" >
+                <div class="alert alert-danger mt-1 mb-1" id='errorMessage' role="alert" style="display:none"></div>
           </div>
-        </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id='addNewBuildingName' onclick="validateBuilding();">Add</button>
       </div>
+     </form>
     </div>
   </div>
 </div>
@@ -168,14 +171,14 @@
                 <div class="form-group">
               <label for= "curr" >Location to Edit</label>
               <select id = 'curr' class="custom-select" onclick='editBuilding();'>
-                <option selected >Select...</option>
+                <option selected id="defaultChoice">Select...</option>
                   {% for loc in locations %}
                     <option  value="{{loc.location}}">{{loc.location}}</option>
                   {% endfor %}
               </select>
 
                   <label class = 'mt-3' for="newName">New Name</label>
-                  <input type="text" onkeypress='editBuilding();' class="form-control" id="newName" disabled>
+                  <input type="text" onkeypress='editBuilding();' class="form-control" id="newName">
                 </div>
             </div>
 
@@ -193,19 +196,19 @@
       Confirm Modification
     </label>
   </div>
-
+<div class="alert alert-danger mt-1 mb-1" id='updateBuildingError' role="alert" style="display:none"></div>
 </form>
       </div>
       <div class="modal-footer">
           <button type="button" id='deleteName' class="btn btn-danger mr-auto"  data-dismiss='modal'
                   data-toggle="modal"  data-target="#removeLocation"
-                  onclick='removeLocation("building")' >
+                  onclick='removeLocation("building")' style="display:none">
 
               Delete
 
           </button>
+        <button id = 'updateName' type="button" class="btn btn-primary" id="updateName" onclick="updateBuilding();" style="display:none">Update</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button id = 'updateName' type="button" class="btn btn-primary" id="updateName">Update</button>
       </div>
     </div>
   </div>
@@ -228,20 +231,25 @@
         <div class="form-group">
         <div class="input-group mb-2 mr-sm-2">
          <div class="input-group-prepend">
-          <div class="input-group-text">Remove</div>
+             <div class="input-group-text"><b>Remove</b></div>
            </div>
           <input type="text" class="form-control" id="toDelete" disabled>
         </div>
           <div class="form-check mb-2 mr-sm-2">
+              <div class="alert alert-warning mt-1 mb-1" id='warningMessage' role="alert">
+
+              </div>
             <input class="form-check-input" type="checkbox" id="confirmDeletion" checked>
             <label class="form-check-label" for="confirmChange">
               Confirm Removal
             </label>
+            <h1 id="type" style="display:none"></h1>
+
           </div>
         </div>
       </div>
       <div class="modal-footer" >
-        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="deleteLoc" >Delete</button>
+        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="deleteLoc" onclick="removeBuilding();">Delete</button>
         <button type="button" class="btn btn-secondary ml-auto" data-dismiss="modal"data-toggle='modal' >Cancel</button>
       </div>
     </div>

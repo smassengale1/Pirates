@@ -9,6 +9,9 @@ class Asset(models.Model):
     a_building = models.CharField(db_column='AssetBuilding', default='Technology', max_length=255)
     a_room = models.CharField(db_column='AssetRoom', default='TBD', max_length=255)
     a_quantity = models.IntegerField (db_column='AssetQuantity')
+    a_vendor = models.CharField(db_column='AssetVendor', default = 'N/A', max_length=255)
+    a_pm = models.IntegerField(db_column='AssetPurchaseMonth', default = 0)
+    a_py = models.IntegerField(db_column='AssetPurchaseYear', default=0)
 
     class Meta:
         db_table = 'asset'
@@ -32,7 +35,7 @@ class Vendor(models.Model):
 
 class Location(models.Model):
     location_building = models.CharField(db_column='Building',  max_length=255)
-    location_room = models.CharField(db_column='Room', max_length=255)
+    location_room = models.CharField(db_column='Room', max_length=255, default='temp')
 
     class Meta:
         db_table = 'location'
