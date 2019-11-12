@@ -29,6 +29,9 @@
     display: none;
 }
 
+#types_header{
+    background-color: #797a7a;
+}
 
 
 .modal-header,

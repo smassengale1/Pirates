@@ -9,20 +9,23 @@
 {% block container %}
     <div class="container-flex">
         <div class = "row">
-            <div class="row"  role="group" id ="v_buttonGroup">
-                <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addDevice">New</button>
+            <div class="row mt-1"  role="group" id ="v_buttonGroup" >
+                <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addDevice" >New</button>
                 <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editDevice">Edit</button>
             </div>
         </div>
+
         <div class = "row" id="v_locCards">
-        {% for vendor in vendorCount %}
+        {% for v in cards %}
+
+
                 <div class="card col-md-3 mt-2 mr-1 bg-dark" style="width: 15rem;">
                     <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" alt="Card image cap">
                     <div class="card-body">
-                        <h5 class="card-title">{{vendor.device}} Vendors</h5>
+                        <h5 class="card-title">{{v.vendor}}</h5>
                         <ul class = "list-group list-group-flush">
-                            <button type="button" id = "{{vendor.device}}_Vendors" class="btn btn-outline-secondary"  data-toggle="modal" data-target="#{{vendor.device}}_view">
-                                Unique Vendors: {{vendor.count}}
+                            <button type="button" id = "{{v.vendor}}" class="btn btn-outline-secondary"  data-toggle="modal" data-target="#{{v.vendor}}_view">
+                                Vendor ID: {{v.id}}
                             </button>
                         </ul>
                     </div>
@@ -32,15 +35,16 @@
     </div>
 
 
-<!-- Modal for Viewing Vendors for a Device -->
+<!-- Modal for Viewing device types for vendor -->
 {% for v in vendors%}
-    {% for type, list1 in v.items %}
-    <div class="modal fade" id="{{type}}_view" tabindex="-1" role="dialog" aria-labelledby="{{type}}_view" aria-hidden="true">
+    {% for vendor, type_info in v.items %}
+
+<div class="modal fade" id="{{vendor}}_view" tabindex="-1" role="dialog" aria-labelledby="{{v}}_view" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
 
         <div class="modal-header" >
-          <h5 class="modal-title" >{{type}} Vendors</h5>
+          <h5 class="modal-title" >{{vendor}} Device Types</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -49,58 +53,117 @@
           <table class="table table-bordered  table-striped table-hover">
             <thead>
                 <tr>
-                  <th scope="col">Model</th>
-                  <th scope="col">Vendor</th>
-                  <th scope="col"># Bought</th>
-                  <th scope="col">Purchase Date</th>
-                  <th scope="col">Replacement Date</th>
+                  <th scope="col" id = 'types_header'>Type</th>
                 </tr>
             </thead>
             <tbody>
- {% for devices in list1 %} <!-- loop to iterate through # of models within a device type -->
-    {% for info in devices %} <!-- loop to iterate through # of devices within a model -->
-
-     <tr id="{{type}}_{{info.v_model}}_{{forloop.counter}}"
-         onclick="editClass('{{info.v_type}}', '{{info.v_brand}}', '{{info.v_model}}',
-                            '{{info.v_name}}', '{{info.v_qb}}', '{{info.v_pm}}', '{{info.v_py}}',
-                            '{{info.v_rm}}', '{{info.v_ry}}', this.id);"
-
-                data-dismiss="modal" data-toggle="modal"
-                data-target="#addVendor">
-         {% if forloop.counter == 1 %}
-            <td id="{{type}}_{{info.v_model}}_{{forloop.counter}}_model"> {{info.v_model}} </td>
-         {% else %}
-            <td></td>
-         {% endif %}
-
-         <td id="{{type}}_{info.v_model}}_{{forloop.counter}}_vendor"> {{info.v_name}}</td>
-         <td id="{{type}}_{{info.v_model}}_{{forloop.counter}}_quantity"> {{info.v_qb}} </td>
-         <td id={{type}}_{{info.v_model}}_{{forloop.counter}}_"pd"> {{info.v_pm}}/{{info.v_py}}</td>
-         <td id="{{type}}_{{info.v_model}}_{{forloop.counter}}_rd"> {{info.v_rm}}/{{info.v_ry}}</td>
+    {% for t in type_info %}
+    {% for type, date_info in t.items %}
+     <tr data-dismiss="modal" data-toggle="modal" data-target="#view_{{vendor}}_{{type}}">
+         <td id="{{vendor}}_{{type}}"> {{type}}</td>
      </tr>
- {% endfor %} <!-- Ends loop for # of devices within a model -->
-
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-{% endfor %} <!-- Ends loop for # of models within Device Type -->
+    {% endfor %}
+    {% endfor %}
  </tbody>
 </table>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary mr-auto"  data-dismiss="modal">Cancel</button>
-      <button type="button" id='new_room' class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#addVendor">Add Vendor</button>
     </div>
 
     </div>
   </div>
 </div>
-{% endfor %} <!-- Ends loop for device types in district -->
+{% endfor %} <!-- Ends Loop to iterate through vendors and type info -->
 {% endfor %} <!-- Ends loop to iterate through vendors on backend -->
+
+
+
+
+
+
+<!-- Modal for Viewing dates for types within vendor -->
+{% for v in vendors%}
+    {% for vendor, type_info in v.items %}
+            {% for t in type_info %}
+    {% for type, model_info in t.items %}
+
+<div class="modal fade" id="view_{{vendor}}_{{type}}" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+        <div class="modal-header" >
+          <h5 class="modal-title" >{{vendor}}'s {{type}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body"  id = '{{vendor}}_{{type}}_body'>
+          <table class="table table-bordered  table-striped table-hover">
+              <thead>
+                <tr>
+                  <th scope="col"  id = 'types_header'>Model</th>
+                  <th scope="col" id = 'types_header'>Purchase Date</th>
+                  <th scope="col" id = 'types_header'>Anticipated Replacment</th>
+                </tr>
+            </thead>
+    {% for m in model_info%}
+      {% for model, date_info in m.items %}
+       <tbody>
+         <tr data-dismiss="modal" data-toggle="modal" data-target="#view_{{vendor}}_{{type}}">
+                <td id="{{vendor}}_{{type}}"> {{model}}</td>
+             {% for date in date_info %}
+                {% if forloop.counter > 1 %}
+                    <td></td> <!-- For dates with same model -->
+                {% endif %}
+                <td id="{{vendor}}_{{type}}">{{date.v_pm}}/{{date.v_py}}</td>
+                <td id="{{vendor}}_{{type}}">{{date.v_rm}}/{{date.v_ry}} </td>
+         </tr>
+             {% endfor %}
+        </tbody>
+       {% endfor %}
+    {% endfor %}
+    </table>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary mr-auto"  data-dismiss="modal">Cancel</button>
+    </div>
+
+    </div>
+  </div>
+</div>
+    {% endfor %}
+    {% endfor %}
+{% endfor %} <!-- Ends Loop to iterate through vendors and type info -->
+{% endfor %} <!-- Ends loop to iterate through vendors on backend -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -192,14 +255,15 @@
       <div class="modal-body">
         <form>
           <div class="form-group">
-            <label for="formGroupExampleInput">Device Type</label>
-            <input type="text" class="form-control" id="formGroupExampleInput">
+            <label for="newDevice">Device Type</label>
+            <input type="text" class="form-control" id="trackNewDevice">
+              <div class="alert alert-danger mt-1 mb-1" id='trackDeviceError' role="alert" style="display:none"></div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-primary" onclick="trackDevice()">Add</button>
       </div>
     </div>
   </div>
@@ -222,14 +286,13 @@
                 <div class="form-group">
               <label for= "currDevice" >Device to Edit</label>
               <select id = 'currDevice' class="custom-select" onclick='editDevice();'>
-                <option selected >Select...</option>
                   {% for v in vendorCount %}
                     <option  value="{{v.device}}">{{v.device}}</option>
                   {% endfor %}
               </select>
 
                   <label class = 'mt-3' for="newName">New Name</label>
-                  <input type="text" onkeypress='editDevice();' class="form-control" id="newName" disabled>
+                  <input type="text" onkeypress='editDevice();' class="form-control" id="newName">
                 </div>
             </div>
 
@@ -260,6 +323,7 @@
           </button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         <button id = 'updateName' type="button" class="btn btn-primary" id="updateName">Update</button>
+        <div class="alert alert-danger mt-1 mb-1" id='updateDeviceError' role="alert" style="display:none"></div>
       </div>
     </div>
   </div>

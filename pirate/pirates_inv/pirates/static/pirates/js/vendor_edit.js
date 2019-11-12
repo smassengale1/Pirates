@@ -149,7 +149,7 @@ function convertMonth(m){
 
 
 function editDevice(){
-    let curr = document.getElementById('currDevice').value
+    let oldName = document.getElementById('currDevice');
     let newName = document.getElementById('newName');
     let showModi = document.getElementById('modifiedVersion');
     let checkBox = document.getElementById('confirmChange');
@@ -157,32 +157,65 @@ function editDevice(){
     let updateButton = document.getElementById('deleteName')
     let deleteButtonOne = document.getElementById('updateName')
 
-     $('#currDevice').click(function(){
-        showModi.value = this.value + ' --> ' + curr
+    let errorMessage = document.getElementById('updateDeviceError')
+    let type = 'device'
 
-        if(this.value === 'Select...'){
-            newName.disabled = true;
-            checkBox.disabled = true
-        }
-        else
-            newName.disabled = false;
-   })
+     $('#currDevice').change(function(){
+        showModi.value = this.value + ' --> ' + newName.value
+
+    })
 
 
 // This updates the modified box to show the modified version
-   $('#newName').keyup(function(){
-    showModi.value = curr + ' --> ' + this.value
+   $('#newName').keyup( function(){
+        showModi.value = oldName.value + ' --> ' + this.value
+    })
 
-    if(curr != 'Select...'){
-        checkBox.disabled = false;
-        this.disabled = false;
-       }
-    else{
-        checkBox.disabled = true;
+    $('#updateName').click(function(){
+
+        if(newName.length != 0){
+        $.ajax({
+            type: "POST",
+            url: '/ajax/update_vendor',
+            async: false,
+            data: {
+                'type': type,
+                'oldName': oldName.value,
+                'newName': newName.value,
+            },
+            dataType: 'json',
+            success: function(data){
+                if(data.exist){
+                    errorMessage.style.display = 'block'
+                    errorMessage = 'Device is already being tracked.'
+                }
+                else
+                    document.location.reload()
+                }
+            })
+
         }
+
+        else{
+            errorMessage.style.display = 'block'
+            errorMessage.innerHTML = 'Input Cannot be Null'
+
+        }
+
+             setTimeout(function wait(){
+                $(errorMessage).fadeOut('slow');
+            }, 3000);
+
     })
 
 }
+
+
+
+
+
+
+
 
 
 function removeDevice(type){
@@ -217,3 +250,42 @@ function removeDevice(type){
 
     document.getElementById('toDelete').value = removeMe
 }
+
+function trackDevice(){
+    let device = document.getElementById("trackNewDevice").value.trim()
+    let errorMessage = document.getElementById('trackDeviceError')
+
+    if(device.length != 0){
+        $.ajax({
+            type: "POST",
+            url: '/ajax/add_vendor',
+            async: false,
+            data: {
+                'device': device,
+                'type': 'device',
+            },
+            dataType: 'json',
+            success: function(data){
+                if(data.exist){
+                    errorMessage.style.display = 'block'
+                    errorMessage = 'Device is already being tracked.'
+                }
+                else
+                    document.location.reload()
+            }
+        })
+
+    }
+
+    else{
+        errorMessage.style.display = 'block'
+        errorMessage.innerHTML = 'Input Cannot be Null'
+
+    }
+
+     setTimeout(function wait(){
+        $(errorMessage).fadeOut('slow');
+    }, 3000);
+}
+
+

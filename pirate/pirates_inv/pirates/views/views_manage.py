@@ -20,87 +20,117 @@ class vendors(View):
         page_template = 'pirates/elements/vendors.html'
         page_title = 'Dover Technology Vendors'
 
+        districtVendors = Vendor.objects.order_by().values('v_vendor', 'v_id').distinct()
+
+        vendor_list = [] #gives info about vendors
+        vendor_stats = [] #names the cards on webpage
 
 
+        for v in districtVendors: #v['v_vendor'] && v['v_id']
+            districtTypes = Vendor.objects.filter(v_vendor = v['v_vendor'])
+            type_list = []
+            for t in districtTypes.values('v_type').distinct():
+                model_list = []
+                for m in districtTypes.filter(v_type = t['v_type']).values('v_model').distinct():
+                    date_list = []
+                    for d in districtTypes.filter(v_type = t['v_type']).filter(v_model = m['v_model']).values('v_quantity','v_pm', 'v_py', 'v_rm', 'v_ry'):
+                        date_list.append(d)
 
-        model_list = []
-        vendor_list = []
-        v_stats = []
+                    model_list.append({
+                        m['v_model'] : date_list
+                    })
 
-
-        device_info = []
-
-        districtDevices = Vendor.objects.order_by().values('v_type').distinct()
-
-
-        # The first two loops gets Asset Types [Projector, Chromebook, Laptop, ect...]
-        for devices in districtDevices:
-            model_list = []
-            for colName, assetType in devices.items():
-                districtModels = Vendor.objects.filter(v_type=assetType).values('v_model').distinct()
-                vendorCount = Vendor.objects.filter(v_type = assetType).values('v_vendor').distinct().count()
-
-                vendor_list.append({
-                    'device' : assetType,
-                    'count'  : vendorCount,
+                type_list.append({
+                    t['v_type']:model_list
                 })
 
-                #models_info = []
-                for models in districtModels:
-                    models_info = []
-                    for colName, assetModel in models.items():
+            vendor_list.append({
+                v['v_vendor'] : type_list,
+            })
 
-                        districtVendors = Vendor.objects.filter(v_model = assetModel).values('v_vendor', 'v_brand','v_qb', 'v_pm', 'v_py', 'v_rm', 'v_ry')
-
-
-
-                        for vendors in districtVendors:
-                            device_info = {
-                                'v_type': assetType,
-                                'v_model': assetModel,
-                                'v_brand': vendors['v_brand'],
-                                'v_name': vendors['v_vendor'],
-                                'v_qb': vendors['v_qb'],
-                                'v_pm': vendors['v_pm'],
-                                'v_py': vendors['v_py'],
-                                'v_rm': vendors['v_rm'],
-                                'v_ry': vendors['v_ry'],
-
-                            }
-
-                            models_info.append(device_info)
-
-                        model_list .append(models_info)
-
-                v_stats.append({
-                    str(assetType): model_list
-                })
+            vendor_stats.append({
+                'vendor' : v['v_vendor'],
+                'id' : v['v_id']
+            })
 
 
-
+        print(vendor_list)
         context = {
             'page_title': page_title,
-            'vendors': v_stats,
-            'vendorCount': vendor_list,
+            'vendors' : vendor_list,
+            'cards' : vendor_stats,
         }
 
 
         return render(request, page_template, context)
 
 
-    def post(self, request, *args, **kwargs):
-        if self.addVendor(request):
-            return JsonResponse({'status': 'success'})
+def add_vendor(request):
+
+
+    return JsonResponse(data, safe=False)
+
+##ADDS NEW DEVICE TO BE TRACKED
+def track_device(request):
+
+    device = request.POST.get('device', None).strip()
+    exist = deviceType.objects.filter(d_type=device).exists()
+    data={'exist': exist}
+
+    if not exist:
+        newDevice = deviceType(d_type = device)
+        newDevice.save()
+    else:
+        print('failed')
+
+    return data
+
+
+###CHANGES DATA IN DB
+def update_vendor(request):
+    type = request.POST.get('type', None).strip()
+    oldName = request.POST.get('oldName', None).strip()
+    newName = request.POST.get('newName', None).strip()
+
+    if type == 'device':
+        update_vendor_device(oldName, newName)
+
+    data = []
+    return JsonResponse(data, safe=False)
+
+
+
+def update_vendor_device(oldName, newName):
+    exist = deviceType.objects.filter(d_type=newName).exists()
+
+    data={
+        'exist':exist,
+        'isNull':False
+    }
+
+    if not exist:
+        if newName != '':
+            v = deviceType.objects.filter(d_type=oldName)
+
+            print("Renaming %s ----> %s" % (oldName, newName))
+            for i in v:
+                i.d_type= newName
+                i.save()
+            print("Device Type has been changed.")
+
+            """
+            print('Updating Devices where Type was %s to %s' % (oldName, newName))
+            for i in a:
+                i.a_building = newName
+                i.save()
+            print("Types have been reassigned")
+            
+            """
         else:
-            return JsonResponse({'status': 'error', 'error': 'No Vulnerabilties Found'})
+            data['isNull'] = True
+    else:
+        print("UPDATE ERROR: Name already exist")
 
-
-
-    def addVendor(self, request):
-        vendorName = request.POST.get('vendorName')
-        print(request.body)
-        return True
-        #x = request.POST.get('vendor_name')
 
 
 
@@ -154,11 +184,13 @@ def validate_building(request):
     building = request.POST.get('building', None).strip()
     type = request.POST.get('type', None)
 
-    if type == 'new_room':
+    if type == 'room':
+        print("Adding a New Room")
         room = request.POST.get('room', None).strip()
         data = addRoom(building, room)
 
     else:
+        print("Adding a New Building")
         data = addBuilding(building)
 
     return JsonResponse(data, safe=False)
@@ -186,7 +218,7 @@ def addBuilding(building):
             data['isNull'] = True
 
     else:
-        print("Error: %s already exists in District Building")
+        print("Error: %s already exists in District Building" % building)
 
 
     return data
@@ -196,18 +228,19 @@ def addBuilding(building):
 def addRoom(building, room):
     exist = Location.objects.filter(location_building = building, location_room = room).exists()
 
+
     data = {'exist' : exist}
 
     if not exist:
         if room != '':
             data['isNull'] = False
 
-            print("Attempting to add <%s>: <%s>" % (building, room))
+            print("Attempting to add %s[%s]" % (building, room))
 
             record = Location(location_building = building, location_room = room)
             record.save()
 
-            print("Successfully add --> <%s>: <%s>" % (building, room))
+            print("Successfully added --> %s[%s]" % (building, room))
 
         else:
             print("Error: Cannot add Null Entry")
@@ -215,7 +248,10 @@ def addRoom(building, room):
 
 
     else:
-        print("Error: %s: %s already exists." % (building, room))
+        print("Error: %s[%s] already exists." % (building, room))
+
+
+
 
 
 
@@ -226,88 +262,181 @@ def addRoom(building, room):
 
 
 
-
-
 def update_building(request):
-    oldName = request.POST.get('oldName', None).strip()
-    newName = request.POST.get('newName', None).strip()
+    oldName = request.POST.get('oldRoom', None).strip()
+    newName = request.POST.get('newRoom', None).strip()
+    type = request.POST.get('type', None).strip()
 
+
+    if type == 'room':
+        print('\n--------------------Modifying Room--------------------')
+        building = request.POST.get('building', None).strip()
+        data = updateRoom(oldName, newName, building)
+        print('----------------------------------------------------')
+
+    else:
+        print('\n--------------------Modifying Building--------------------')
+        data = updateBuilding(oldName, newName)
+        print('---------------------------------------------------------')
+
+
+
+    return JsonResponse(data, safe=False)
+
+def updateBuilding(oldName, newName):
     exist = Location.objects.filter(location_building = newName).exists()
+    data = {'exist' : exist}
 
+    print("Confirming %s is unique: " % (newName), end='/')
     if not exist:
-        l = Location.objects.filter(location_building=oldName)
-        a = Asset.objects.filter(a_building = oldName)
+        if newName != '':
+            print("Confirmed/")
+            data['isNull'] = False
+            l = Location.objects.filter(location_building=oldName)
+            a = Asset.objects.filter(a_building = oldName)
 
-        print('Updating Location Building Name from %s to %s' % (oldName, newName))
-        for i in l:
-            i.location_building = newName
-            i.save()
+            print("Renaming %s ----> %s" % (oldName, newName))
+            for i in l:
+                i.location_building = newName
+                i.save()
+            print("Room has been changed.")
 
-        print('Updating Assets where Building was %s to %s' % (oldName, newName))
-        for i in a:
-            i.a_building = newName
-            i.save()
+            print('Updating Rooms where Building was %s to %s' % (oldName, newName))
+            for i in a:
+                i.a_building = newName
+                i.save()
+            print("Rooms have been reassigned")
+        else:
+            print("UPDATE ERROR: Name can not be null")
+            data['isNull'] = True
+
 
     else:
         print("%s Already Exist" % newName)
 
+    return data
 
-    data = {
-        'exist':exist
-    }
+def updateRoom(oldName, newName, building):
+    exist = Location.objects.filter(location_building = building, location_room = newName).exists()
+    data = {'exist':exist}
 
-    return JsonResponse(data, safe=False)
+    print("Confirming %s[%s] is unique:" % (building, newName) , end='  ')
+    if not exist:
+        if newName != '':
+            data['isNull'] = False
+
+            print("Confirmed.  ")
+            l = Location.objects.filter(location_building = building, location_room = oldName)
+            a = Asset.objects.filter(a_building = building, a_room = oldName)
+
+            print("Renaming %s[%s] ----> %s[%s]:" % (building, oldName, building, newName), end = "  ")
+            for i in l:
+                i.location_room = newName
+                i.save()
+            print("Completed  ")
+
+            print("Reassigning assets tied to %s[%s} ----> %s[%s]:" % (building, oldName, building, newName), end=" ")
+            for assets in a:
+                assets.a_room = newName
+                assets.save()
+            print("Completed  ")
+        else:
+            print("\n\nUPDATE ERROR: New name cannot be null")
+
+            data['isNull'] = True
+    else:
+        print("Failed  ")
+        print("\n\nUPDATE ERROR: %s[%s] is not unique." % (building, newName))
+        print("aborting...")
 
 
-def remove_building(request):
+    return data
+
+
+
+
+def remove_location(request):
     area = request.POST.get('area', None).strip()
     type = request.POST.get('type', None)
     building = request.POST.get('roomBuilding', None).strip()
 
+    print("-----Removing Location Module-----")
 
     if type == 'building':
-        print('Confirming %s is a Building' % area)
-        l = Location.objects.filter(location_building=area)
-        a = Asset.objects.filter(a_building=area)
+        print("Location Type: Building")
+        data = removeBuilding(area)
 
     else:
-        print('Confirming %s: %s is in Database' % (building, area))
-        building = request.POST.get('roomBuilding', None)
-        l = Location.objects.filter(location_building=building, location_room=area)
-        a = Asset.objects.filter(a_building=building, a_room=area)
+        print("Location Type: Room")
+        data = removeRoom(building, area)
 
 
+    return JsonResponse(data, safe=False)
+
+
+
+def removeBuilding(building):
+    print('Confirming %s is in Database' % building)
+    l = Location.objects.filter(location_building=building)
+    a = Asset.objects.filter(a_building=building)
+    data = {}
 
     if l.exists():
-        print('%s confirmed' % area)
-        data = {
-            'exist': True
-        }
+        print("%s Confirmed" % building)
+        data['exist'] = True
 
         if a.count() != 0:
-            print("Devices still assigned to %s" % area)
-            if type == 'building':
-                if not Location.objects.filter(location_building = 'Technology Office').exists() :
-                    print('Creating Temporary Storage')
-                    validate_building('Technology Office')
-
-                    building = 'Technology Office'
-
-            else:
-                if not Location.objects.filter(location_building = building, location_room = 'temp').exists():
-                    print('Creating Temporary Storage in %s: temp' % (building))
-                    #need to make validate rooms ready for this
+            print("Reassigning Assets tied to <%s> --> Technology Office" % building)
+            building = 'Technology Office'
+            if not Location.objects.filter(location_building = building).exists():
+                    print('Technology Office not found; Creating Technology Office')
+                    addBuilding(building)
 
 
-        for i in a:
-            i.a_building = building
-            i.a_room = 'temp'
-            i.save()
+            for i in a:
+                i.a_building = building
+                i.a_room = 'temp'
+                i.save()
+
+
+        for loc in l:
+            loc.delete()
+
+    if l.exists():
+        data['data'] = False
+
+
+    return data
+
+
+
+def removeRoom(building, room):
+    print("\nConfirming %s <%s>" % (building, room))
+    l = Location.objects.filter(location_building=building, location_room=room)
+    a = Asset.objects.filter(a_building=building, a_room=room)
+    data = {}
+
+    if l.exists():
+        print("%s <%s> confirmed" % (building, room))
+        data['exist'] = True
+        if a.count() > 0:
+            print("Reassigning Assets tied to %s <%s>" % (building, room))
+            if not Location.objects.filter(location_building = building, location_room = 'temp').exists():
+                addRoom('temp', building)
+                print('Devices Reassigned to %s <temp>\n\n' % building)
+
+
+            for i in a:
+                i.a_building = building
+                i.a_room = 'temp'
+                i.save()
+
+    else:
+        print("LOCATION NOT FOUND: %s <%s> was not found; aborting.\n\n" % (building, room))
+
 
     for loc in l:
         loc.delete()
-
-
 
     if l.exists():
         data = {
@@ -315,8 +444,10 @@ def remove_building(request):
         }
 
 
+    return data
 
-    return JsonResponse(data, safe=False)
+
+
 
 
 @method_decorator(decorators, name='dispatch')
@@ -370,12 +501,6 @@ class assets(View):
 
         context = {
             'deviceCount': deviceCount,
-            'roomCount': roomCount,
-            'locations': assetBuildings,
-            'roomDevices': roomDevices,
-            'assetRooms' : assetRooms,
-            'vendors':vendors,
-
         }
 
         return render(request, page_template, context)

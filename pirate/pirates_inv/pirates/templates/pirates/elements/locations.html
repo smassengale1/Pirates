@@ -12,7 +12,7 @@
         <div class = "row">
             <div class="row"  role="group" id ="buttonGroup">
                 <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addLocation">New</button>
-                <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editLocation">Edit</button>
+                <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editLocation" onclick='editBuilding();'>Edit</button>
             </div>
         </div>
         <div class = "row" id="locCards">
@@ -57,9 +57,9 @@
                           {% for classRooms in roomNums %}
                             {% for colName, class in classRooms.items %}
                               <td
-                                  id="{{class}}" onclick="editClass('{{buildings}}', this.id);"
+                                  id="{{class}}" onclick="editRoom('{{buildings}}', this.id);"
                                   data-dismiss="modal" data-toggle="modal"
-                                  data-target="#newLocationForm">
+                                  data-target="#updateAsset">
 
                                   {{class}}
 
@@ -80,7 +80,7 @@
 
 <div class="modal-footer">
   <button type="button" class="btn btn-secondary mr-auto"  data-dismiss="modal">Cancel</button>
-  <button type="button" id='new_room' class="btn btn-primary" onclick="editClass('{{buildings}}', 'new_room');" data-dismiss="modal" data-toggle="modal" data-target="#newLocationForm">Add Room</button>
+  <button type="button" id='add_new_room' class="btn btn-primary" onclick="addRoom('{{buildings}}');" data-dismiss="modal" data-toggle="modal" data-target="#newLocationForm">New</button>
 </div>
 
                 </div>
@@ -94,7 +94,7 @@
 {% endfor %}
 
 
-<!----- New Location Modal -->
+<!----- New Modal -->
 <div class="modal" id = 'newLocationForm' tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -111,20 +111,52 @@
             <label for="roomNumber">Room Number</label>
             <input  type="text" class="form-control" id="roomNumber">
             <h1 id="newType" style="display:none"></h1>
-              <div class="alert alert-danger mt-1 mb-1" id='errorMessageRoom' role="alert" style="display:none"></div>
+              <div class="alert alert-danger mt-1 mb-1" id='addingRoomError' role="alert" style="display:none"></div>
           </div>
         </form>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-danger mr-auto" data-toggle="modal"   data-dismiss="modal" data-target="#removeLocation" id="deleteVendor" onclick="removeLocation('room');">Delete</button>
-        <button type="button" class="btn btn-primary" onclick="validateBuilding();">Save</button>
+        <button type="button" class="btn btn-primary" id='addRoom'>Save</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal" id="newCancelButton">Close</button>
       </div>
     </div>
   </div>
 </div>
+<!------------End of new room ------------------->
 
+<!----- edit Location Modal -->
+<div class="modal" id = 'updateAsset' tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editRoomTitle"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+          <form>
+          <div class="form-group">
+            <label for="roomNum">Room Number</label>
+            <input  type="text" class="form-control" id="roomNum">
+            <h1 id="locType" style="display:none"></h1>
+
+              <div class="alert alert-danger mt-1 mb-1" id='errorUpdateRoom' role="alert" style="display:none"></div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal"   data-dismiss="modal" data-target="#removeLocation" id="deleteVendor" onclick="removeLocation('room');">Delete</button>
+        <button type="button" class="btn btn-primary" id='updateRoom'>Update</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <!---------- Add a new Building ---------->
@@ -142,7 +174,7 @@
           <div class="form-group">
                 <label for="newBuildingName">Building Name</label>
                 <input type="text" class="form-control" id="newBuildingName" >
-                <div class="alert alert-danger mt-1 mb-1" id='errorMessage' role="alert" style="display:none"></div>
+                <div class="alert alert-danger mt-1 mb-1" id='errorMessageBuilding' role="alert" style="display:none"></div>
           </div>
       </div>
       <div class="modal-footer">
@@ -170,7 +202,7 @@
             <div class="input-group mb-3">
                 <div class="form-group">
               <label for= "curr" >Location to Edit</label>
-              <select id = 'curr' class="custom-select" onclick='editBuilding();'>
+              <select id = 'curr' class="custom-select">
                 <option selected id="defaultChoice">Select...</option>
                   {% for loc in locations %}
                     <option  value="{{loc.location}}">{{loc.location}}</option>
@@ -178,7 +210,7 @@
               </select>
 
                   <label class = 'mt-3' for="newName">New Name</label>
-                  <input type="text" onkeypress='editBuilding();' class="form-control" id="newName">
+                  <input type="text"  class="form-control" id="newName">
                 </div>
             </div>
 
@@ -207,7 +239,7 @@
               Delete
 
           </button>
-        <button id = 'updateName' type="button" class="btn btn-primary" id="updateName" onclick="updateBuilding();" style="display:none">Update</button>
+        <button id = 'updateBuilding' type="button" class="btn btn-primary" id="updateBuildin" style="display:none">Update</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
       </div>
     </div>

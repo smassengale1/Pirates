@@ -34,7 +34,10 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
 
     path('ajax/validate_building', manage_views.validate_building),
-    path('ajax/remove_building', manage_views.remove_building),
+    path('ajax/remove_building', manage_views.remove_location),
     path('ajax/update_building', manage_views.update_building),
+
+    path('ajax/add_vendor', manage_views.add_vendor),
+    path('ajax/update_vendor', manage_views.update_vendor),
 
 ]

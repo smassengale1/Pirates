@@ -10,27 +10,25 @@ class Asset(models.Model):
     a_room = models.CharField(db_column='AssetRoom', default='TBD', max_length=255)
     a_quantity = models.IntegerField (db_column='AssetQuantity')
     a_vendor = models.CharField(db_column='AssetVendor', default = 'N/A', max_length=255)
-    a_pm = models.IntegerField(db_column='AssetPurchaseMonth', default = 0)
-    a_py = models.IntegerField(db_column='AssetPurchaseYear', default=0)
 
     class Meta:
         db_table = 'asset'
 
 
-
 class Vendor(models.Model):
-    v_type = models.CharField(db_column='VendorAssetType', max_length=255)
-    v_brand = models.CharField(db_column='VendorAssetBrand', max_length=255)
-    v_model = models.CharField(db_column='VendorAssetModel', max_length=255)
     v_vendor = models.CharField(db_column='VendorAssetVendor', max_length=255)
-    v_qb = models.IntegerField (db_column='VendorAssetQuantityBought', default= -0)
-    v_pm = models.IntegerField(db_column='VendorAssetPurchaseMonth', null = True)
-    v_py = models.IntegerField(db_column='VendorAssetPurchaseYear', null=True)
-    v_rm = models.IntegerField(db_column='VendorAssetReplacementMonth', default = 0)
-    v_ry = models.IntegerField(db_column='VendorAssetReplacementYear', default = 0)
+    v_id = models.CharField(db_column='VendorAssetID', max_length=25, default = 'n/a')
+    v_type = models.CharField(db_column='VendorAssetModel', max_length=255)
+    v_model = models.CharField(db_column='VendorAssetType', max_length=255)
+    v_quantity = models.IntegerField(db_column = 'VendorAssetQuantity', default = 0)
+    v_pm = models.IntegerField(db_column='AssetPurchaseMonth', default = 0)
+    v_py = models.IntegerField(db_column='AssetPurchaseYear', default=0)
+    v_rm = models.IntegerField(db_column='AssetReplacementMonth', default=0)
+    v_ry = models.IntegerField(db_column='AssetReplacementYear', default=0)
 
     class Meta:
         db_table = 'vendor'
+
 
 
 class Location(models.Model):

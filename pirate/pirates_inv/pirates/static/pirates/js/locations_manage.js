@@ -1,24 +1,5 @@
-function editClass(buildings, roomID){
-    let title = document.getElementById('newModalTitle')
-    let defaultRoom = document.getElementById('roomNumber')
-
-    //May need to be deleted
-    title.innerHTML = buildings
-
-    if (roomID != 'new_room'){
-        title.innerHTML = buildings
-        defaultRoom.value = roomID
-    }
-    else{
-        defaultRoom.value = ' '
-        document.getElementById('newType').innerHTML = roomID
-    }
-
-
-}
 
 function validateBuilding(){
-    let errorMessage = document.getElementById('errorMessageRoom')
     let error = null
     let type = document.getElementById('newType').innerHTML;
     let room = ''
@@ -26,6 +7,7 @@ function validateBuilding(){
     if (type === 'new_room'){
         building = document.getElementById('newModalTitle').innerHTML
         room = document.getElementById('roomNumber').value
+        errorMessage = document.getElementById('errorMessageRoom')
 
         console.log('Building: ' + building)
         console.log('Room: ' + document.getElementById('roomNumber').value)
@@ -33,6 +15,7 @@ function validateBuilding(){
     }
     else {
         building = document.getElementById('newBuildingName').value;
+        errorMessage = document.getElementById('errorMessageBuilding')
         console.log('Building: ' + building)
     }
 
@@ -83,70 +66,6 @@ function validateBuilding(){
 
 
 
-
-
-
-function editBuilding(){
-    let curr = document.getElementById('curr').value
-    let showModi = document.getElementById('modifiedVersion');
-    let newName = document.getElementById('newName');
-    let checkBox = document.getElementById('confirmChange');
-    let default_option = document.getElementById('defaultChoice').innerHTML;
-
-    //Shows if check box is checked or not
-    //let isChecked = document.getElementById('confirmChange').checked
-
-
-
-    $('#curr').click(function(){
-        curr = this.value
-        let isChecked = document.getElementById('confirmChange').checked
-        let newName = document.getElementById('newName').value;
-
-        if (curr != default_option){
-            document.getElementById('deleteName').style.display = 'block'
-            if (isChecked && newName != '')
-                document.getElementById('updateName').style.display = 'block'
-        }
-
-        else{
-            document.getElementById('deleteName').style.display = 'none'
-            document.getElementById('updateName').style.display = 'none'
-        }
-
-        showModi.value = curr + ' -----> ' + newName
-   })
-
-   $('#newName').keyup(function(){
-        let newName = this.value
-        let isChecked = document.getElementById('confirmChange').checked
-        let curr = document.getElementById('curr').value;
-
-
-        if (newName != '' && isChecked && curr != default_option)
-            document.getElementById('updateName').style.display = 'block'
-        else
-            document.getElementById('updateName').style.display = 'none'
-
-        showModi.value = curr + ' -----> ' + newName
-   })
-
-   $('#confirmChange').click(function(){
-        let isChecked = document.getElementById('confirmChange').checked
-        let newName = document.getElementById('newName').value;
-        let curr = document.getElementById('curr').value;
-
-        if (isChecked && newName != '' && curr != default_option)
-            document.getElementById('updateName').style.display = 'block'
-        else
-            document.getElementById('updateName').style.display = 'none'
-
-   })
-
-
-}
-
-
 function removeLocation(type){
 
 
@@ -180,9 +99,13 @@ function removeLocation(type){
 
 //Actually Deletes Building
 function removeBuilding(){
-    let errorMessage = document.getElementById('errorMessage')
     let warningMessage = document.getElementById('warningMessage')
     let type = document.getElementById('type').innerHTML;
+
+    if(type ==='room')
+        errorMessage = document.getElementById('errorMessageRoom')
+    else
+        errorMessage = document.getElementById('errorMessageBuilding')
 
 
      $.ajax({
@@ -216,39 +139,213 @@ function removeBuilding(){
 }
 
 
-function updateBuilding(){
-    let oldName = document.getElementById('curr').value;
-    let newName = document.getElementById('newName').value;
-    let errorMessage = document.getElementById('updateBuildingError')
+//Adds new room by taking information from the #newLocationForm
+//and sending it to validate_building()
+function addRoom(building){
+    let newRoomNum = document.getElementById('')
+    errorMessage = document.getElementById('addingRoomError')
+    type = 'room'
 
-    $.ajax({
+    $('#addRoom').click(function(){
+        let room = document.getElementById('roomNumber').value
+
+        console.log('addRoom()') //for testing delete later
+        console.log(building)
+        console.log(room)
+        console.log(type)
+
+
+        $.ajax({
             type: "POST",
-            url: '/ajax/update_building',
+            url: '/ajax/validate_building',
             async: false,
             data: {
-            'oldName': oldName,
-            'newName' : newName,
+            'building': building,
+            'room': room,
+            'type': type
             },
 
             dataType: 'json',
             success: function (data){
                 if(data.exist){
                     errorMessage.style.display = 'block'
-                    errorMessage.innerHTML = 'Duplicate Names Are Not Allowed.'
-                    console.log("Duplicate In Database")
-            }
-                else{
-                    console.log('Successfully Changed Names')
-                    document.location.reload();
+                    errorMessage.innerHTML = `${building}[${room}] already exist.`
+                    console.log("Item Did not Delete")
+
                 }
+                else if (data.isNull){
+                    errorMessage.style.display = 'block'
+                    errorMessage.innerHTML = 'Entry Cannot be null'
+                }
+                else{
+                    document.location.reload()
+                    errorMessage.style.display = 'none'
+                }
+
+                setTimeout(function wait(){
+                    $(errorMessage).fadeOut('slow');
+                }, 3000);
+
             }
+
 
         })
-
-    setTimeout(
-        function wait(){
-              $(errorMessage).fadeOut('slow');
-        }, 3000);
+    })
 }
+
+function editBuilding(){
+    let showModi = document.getElementById('modifiedVersion');
+    let checkBox = document.getElementById('confirmChange');
+    let default_option = document.getElementById('defaultChoice').innerHTML;
+    errorMessage = document.getElementById('updateBuildingError')
+
+
+
+
+
+    //Location to Edit
+    $('#curr').click(function(){
+        curr = this.value
+        let isChecked = document.getElementById('confirmChange').checked
+        let newName = document.getElementById('newName').value;
+
+        if (curr != default_option){
+            document.getElementById('deleteName').style.display = 'block'
+            if (isChecked && newName != '')
+                document.getElementById('updateBuilding').style.display = 'block'
+        }
+
+        else{
+            document.getElementById('deleteName').style.display = 'none'
+            document.getElementById('updateBuilding').style.display = 'none'
+        }
+
+        showModi.value = curr + ' -----> ' + newName
+        console.log('Building to edit Selected')
+   })
+
+    //Input Box For New Name
+   $('#newName').keyup(function(){
+        let newName = this.value
+        let isChecked = document.getElementById('confirmChange').checked
+        let curr = document.getElementById('curr').value;
+
+
+        if (newName != '' && isChecked && curr != default_option)
+            document.getElementById('updateBuilding').style.display = 'block'
+        else
+            document.getElementById('updateBuilding').style.display = 'none'
+
+        showModi.value = curr + ' -----> ' + newName
+
+        console.log('Name Changed')
+   })
+
+    //Check box to confirm it
+   $('#confirmChange').click(function(){
+        let isChecked = document.getElementById('confirmChange').checked
+        let newName = document.getElementById('newName').value;
+        let curr = document.getElementById('curr').value;
+
+        if (isChecked && newName != '' && curr != default_option)
+            document.getElementById('updateBuilding').style.display = 'block'
+        else
+            document.getElementById('updateBuilding').style.display = 'none'
+
+        console.log('Check Box Clicked')
+
+   })
+
+
+   $('#updateBuilding').click(function(){
+        $.ajax({
+            type: "POST",
+            url: '/ajax/update_building',
+            async: false,
+            data: {
+                'newRoom' : newName.value,
+                'oldRoom' : curr,
+                'type' : 'building'
+            },
+
+            dataType: 'json',
+
+            success: function (data){
+                if(data.exist){
+                    errorMessage.style.display = 'block'
+                    errorMessage.innerHTML = `${newName} already exist.`
+                    console.log("Item Did not Delete")
+
+                }
+                else if (data.isNull){
+                    errorMessage.style.display = 'block'
+                    errorMessage.innerHTML = 'Entry Cannot be null'
+                }
+                else{
+                    document.location.reload()
+                    errorMessage.style.display = 'none'
+                }
+
+                setTimeout(function wait(){
+                    $(errorMessage).fadeOut('slow');
+                }, 3000);
+
+            }
+
+
+        })
+    })
+
+}
+
+function editRoom(building, room){
+    errorMessage = document.getElementById('errorUpdateRoom')
+
+    document.getElementById('editRoomTitle').innerHTML = building
+    document.getElementById('roomNum').placeholder = room
+    type = 'room'
+
+    $('#updateRoom').click(function(){
+        let newName = document.getElementById('roomNum').value
+
+         $.ajax({
+            type: "POST",
+            url: '/ajax/update_building',
+            async: false,
+            data: {
+            'building': building,
+            'newRoom': newName,
+            'oldRoom': room,
+            'type': type
+            },
+            dataType: 'json',
+            success: function (data){
+                if(data.exist){
+                    errorMessage.style.display = 'block'
+                    errorMessage.innerHTML = `${building} ${newName} already exist.`
+                    console.log("Item Did not Delete")
+
+                }
+                else if (data.isNull){
+                    errorMessage.style.display = 'block'
+                    errorMessage.innerHTML = 'Entry Cannot be null'
+                }
+                else{
+                    document.location.reload()
+                    errorMessage.style.display = 'none'
+                }
+
+                setTimeout(function wait(){
+                    $(errorMessage).fadeOut('slow');
+                }, 3000);
+
+            }
+
+
+        })
+    })
+
+}
+
 
 
