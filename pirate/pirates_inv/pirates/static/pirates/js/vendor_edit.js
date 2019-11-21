@@ -16,7 +16,7 @@ function showDate(){
                     case '02':
                         month = 'February';
                         break;
-                    case '03':
+                    case 'March':
                         month = 'March';
                         break;
                     case '04':
@@ -59,233 +59,152 @@ function showDate(){
     })
 }
 
+function convertMonthToInt(date){
 
+    if (date.length > 1){
+        let month = date.slice(0,-5)
 
-function editClass(d_type, d_brand, d_model, d_vendor, d_qb, d_pm, d_py, d_rm, d_ry, id){
+        switch(month){
+            case 'January' :
+                month = 1;
+                break;
+            case 'February':
+                month = 2;
+                break;
+            case 'March':
+                month = 3;
+                break;
+            case 'April':
+                month = 4;
+                break;
+            case 'June':
+                month = 5;
+                break;
+            case 'July':
+                month = 6;
+                break;
+            case 'July':
+                month = 7;
+                break;
+            case 'August':
+                month = 8;
+                break;
+            case 'September':
+                month = 9;
+                break;
+            case 'October':
+                month = 10;
+                break;
+            case 'November':
+                month = 11;
+                break;
+            case 'December':
+                month = 12;
+                break;
+            default:
+                month = '';
+                break;
 
-    let defaultType = document.getElementById("selectedType");
-    let defaultBrand = document.getElementById("deviceBrand");
-    let defaultModel = document.getElementById("deviceModel");
-    let defaultVendor = document.getElementById("deviceVendor");
-    let defaultQb = document.getElementById("quantityBought");
-    let defaultPurchaseD = document.getElementById('purchaseDate');
-    let defaultReplacementD = document.getElementById('replacementDate');
-
-    let optionsType = document.getElementById(d_type)
-
-    let deleteButton = document.getElementById('deleteVendor')
-
-    deleteButton.style.display = "block";
-
-
-    if (optionsType.value === d_type)
-       optionsType.style.display = "none";
-
-    if(d_pm.length === 1)
-       d_pm = 0 + d_pm
-
-
-    getPdate = `${d_py}-${d_pm}`
-    getRdate = convertMonth(d_rm) + ' ' + d_ry;
-
-
-    defaultType.innerHTML = d_type;
-    defaultBrand.value = d_brand;
-    defaultModel.value = d_model;
-    defaultVendor.value = d_vendor;
-    defaultQb.value = d_qb;
-    defaultPurchaseD.defaultValue = getPdate
-    defaultReplacementD.value = getRdate;
-
+        }
+        date = year + '-' + month
+    }
+    return date
 }
 
 
+function isNull(vendor){
+    const table = document.getElementById(vendor + "_device_table")
+    const nullTable = document.getElementById(vendor + "_null")
+    const row = table.rows.length - 1;
 
-function convertMonth(m){
-    switch(m){
-        case '1':
-            month = 'January';
-            break;
-        case '2':
-            month = 'February';
-            break;
-        case '3':
-            month = 'March';
-            break;
-        case '4':
-            month = 'April';
-            break;
-        case '5':
-            month = 'May';
-            break;
-        case '6':
-            month = 'June';
-            break;
-        case '7':
-            month = 'July';
-            break;
-        case '8':
-            month = 'August';
-            break;
-        case '9':
-            month = 'September';
-            break;
-        case '10':
-            month = 'October';
-            break;
-        case '11':
-            month = 'November';
-            break;
-        case '12':
-            month = 'December';
-            break;
-        default:
-            month = '';
-            break;
+
+    if (row === 0){
+        table.style.display = "none";
+        nullTable.style.display = "block"
+
+        //Add an add button if null
+    }
+    else{
+    nullTable.style.display = "none";
+
     }
 
-    return month
 }
 
+//grabs vendor name when add button gets clicked on {{vendor}}_view modal
+// and places it in add_vendor_records vendor spot
+function getVendorName(vendor){
+    document.getElementById('deviceVendor').value = vendor
+}
 
-function editDevice(){
-    let oldName = document.getElementById('currDevice');
-    let newName = document.getElementById('newName');
-    let showModi = document.getElementById('modifiedVersion');
-    let checkBox = document.getElementById('confirmChange');
+function addVendorRecord(){
+let deviceType = document.getElementById('deviceType').value.trim()
+let make = document.getElementById('deviceBrand').value.trim()
+let model = document.getElementById('deviceModel').value.trim()
+let vendor = document.getElementById('deviceVendor').value.trim()
+let quantity = document.getElementById('quantityBought').value.trim()
+let pd = document.getElementById('purchaseDate').value.trim()
+let rd = document.getElementById('replacementDate').value.trim()
 
-    let updateButton = document.getElementById('deleteName')
-    let deleteButtonOne = document.getElementById('updateName')
+let month =  rd.slice(0,-5)
+let year = parseInt(date.slice(-4))
 
-    let errorMessage = document.getElementById('updateDeviceError')
-    let type = 'device'
-
-     $('#currDevice').change(function(){
-        showModi.value = this.value + ' --> ' + newName.value
-
-    })
+rm = convertMonthToInt(rd)
+ry =
 
 
-// This updates the modified box to show the modified version
-   $('#newName').keyup( function(){
-        showModi.value = oldName.value + ' --> ' + this.value
-    })
+console.log(`${deviceType}`)
+console.log(make)
+console.log(model)
+console.log(vendor)
+console.log(quantity)
+console.log(pd)
+console.log(rd)
 
-    $('#updateName').click(function(){
 
-        if(newName.length != 0){
-        $.ajax({
-            type: "POST",
-            url: '/ajax/update_vendor',
-            async: false,
-            data: {
-                'type': type,
-                'oldName': oldName.value,
-                'newName': newName.value,
-            },
-            dataType: 'json',
-            success: function(data){
-                if(data.exist){
-                    errorMessage.style.display = 'block'
-                    errorMessage = 'Device is already being tracked.'
-                }
-                else
-                    document.location.reload()
+
+
+}
+function newVendor(){
+    let vendor = document.getElementById('new_vendor').value.trim();
+    let id = document.getElementById('new_vendor_id').value.trim();
+
+
+    $('#addVendor').click(function(){
+        //0 is False || anything > 0 True
+        if(vendor && id){
+            $.ajax({
+                type: "POST",
+                url: '/ajax/add_vendor',
+                async: false,
+                data: {
+                'vendor' : vendor,
+                'vendorID' : id,
+                },
+
+                dataType: 'json',
+                success: function (data){
+                    if(data.exist){
+                        errorMessage.style.display = 'block'
+                        errorMessage.innerHTML = `${vendor}(${id}) already exists.`
+                        console.log("Duplicate In Database")
+
+                    }
+                    else
+                        document.location.reload()
                 }
             })
-
         }
 
         else{
-            errorMessage.style.display = 'block'
-            errorMessage.innerHTML = 'Input Cannot be Null'
-
+            errorMessage = document.getElementById('addVendorError');
+            errorMessage.innerHTML = "Input cannot be Null";
+            errorMessage.style.display = 'block';
         }
-
-             setTimeout(function wait(){
-                $(errorMessage).fadeOut('slow');
-            }, 3000);
-
     })
 
+    setTimeout(
+       function wait(){
+            $(errorMessage).fadeOut('slow');
+        }, 3000);
 }
-
-
-
-
-
-
-
-
-
-function removeDevice(type){
-    let checkBox = document.getElementById('confirmDeletion').isChecked;
-    let deleteButton = document.getElementById('deleteDevice')
-
-
-    if(type === 'vendor'){
-        let vendor = document.getElementById('deviceVendor').value
-        let make = document.getElementById('deviceBrand').value
-        let model = document.getElementById('deviceModel').value + '(s)'
-        let qBought = document.getElementById('quantityBought').value
-        let pDate = document.getElementById('purchaseDate').value
-
-        let year = parseInt(pDate.slice(0,4))
-        let month = parseInt(pDate.slice(5,7))
-
-        month = convertMonth(month.toString())
-
-        removeMe = `${vendor} | ${qBought} ${make} ${model} | ${month} ${year}`
-
-    }
-    else
-        removeMe = document.getElementById('currDevice').value
-
-
-    $('#confirmDeletion').click(function(){
-            $('#deleteDevice').toggle()
-
-    })
-
-
-    document.getElementById('toDelete').value = removeMe
-}
-
-function trackDevice(){
-    let device = document.getElementById("trackNewDevice").value.trim()
-    let errorMessage = document.getElementById('trackDeviceError')
-
-    if(device.length != 0){
-        $.ajax({
-            type: "POST",
-            url: '/ajax/add_vendor',
-            async: false,
-            data: {
-                'device': device,
-                'type': 'device',
-            },
-            dataType: 'json',
-            success: function(data){
-                if(data.exist){
-                    errorMessage.style.display = 'block'
-                    errorMessage = 'Device is already being tracked.'
-                }
-                else
-                    document.location.reload()
-            }
-        })
-
-    }
-
-    else{
-        errorMessage.style.display = 'block'
-        errorMessage.innerHTML = 'Input Cannot be Null'
-
-    }
-
-     setTimeout(function wait(){
-        $(errorMessage).fadeOut('slow');
-    }, 3000);
-}
-
-

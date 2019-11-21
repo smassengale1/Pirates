@@ -66,7 +66,22 @@ class vendors(View):
 
 
 def add_vendor(request):
+    vendor = request.POST.get('vendor', None)
+    id = request.POST.get('vendorID', None)
 
+    exist = Vendor.objects.filter(v_vendor = vendor, v_id = id).exists()
+    print("Checking if %s(%s) is unique: " % (vendor,id), end='/')
+    if(not exist):
+        print("Confirmed/")
+        print("Adding New Vendor: ", end='/')
+        newVendor = Vendor(v_vendor = vendor, v_id = id)
+        newVendor.save()
+        print("%s(%s) added/" % (vendor, id))
+    else:
+        print("Failed/")
+        print("ABORTING")
+
+    data = { 'exists' : exist }
 
     return JsonResponse(data, safe=False)
 

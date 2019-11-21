@@ -10,7 +10,7 @@
     <div class="container-flex">
         <div class = "row">
             <div class="row mt-1"  role="group" id ="v_buttonGroup" >
-                <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addDevice" >New</button>
+                <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addVendor" >New</button>
                 <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editDevice">Edit</button>
             </div>
         </div>
@@ -24,7 +24,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{v.vendor}}</h5>
                         <ul class = "list-group list-group-flush">
-                            <button type="button" id = "{{v.vendor}}" class="btn btn-outline-secondary"  data-toggle="modal" data-target="#{{v.vendor}}_view">
+                            <button type="button" id = "{{v.vendor}}" class="btn btn-outline-secondary"  data-toggle="modal" data-target="#{{v.vendor}}_view" onclick = "isNull('{{v.vendor}}')">
                                 Vendor ID: {{v.id}}
                             </button>
                         </ul>
@@ -50,25 +50,35 @@
           </button>
         </div>
         <div class="modal-body"  id = 'modalBody'>
-          <table class="table table-bordered  table-striped table-hover">
+            <div class="alert alert-warning mt-1 mb-1" id='{{vendor}}_null' role="alert" style="display:none">
+                <p>
+                    The Vendor <b><i>{{vendor}}</i></b> currently has no information.
+
+                </p>
+            </div>
+
+          <table class="table table-bordered  table-striped table-hover" id = "{{vendor}}_device_table" >
             <thead>
                 <tr>
                   <th scope="col" id = 'types_header'>Type</th>
                 </tr>
             </thead>
             <tbody>
-    {% for t in type_info %}
-    {% for type, date_info in t.items %}
-     <tr data-dismiss="modal" data-toggle="modal" data-target="#view_{{vendor}}_{{type}}">
-         <td id="{{vendor}}_{{type}}"> {{type}}</td>
-     </tr>
-    {% endfor %}
+            {% for t in type_info %}
+            {% for type, model_info in t.items %}
+            {% if type != 'N/A' %}
+             <tr data-dismiss="modal" data-toggle="modal" data-target="#view_{{vendor}}_{{type}}">
+                 <td> {{type}}</td>
+             </tr>
+            {% endif %}
+        {% endfor %}
     {% endfor %}
  </tbody>
 </table>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary mr-auto"  data-dismiss="modal">Cancel</button>
+      <button type="button" class="btn btn-primary ml-auto"  data-dismiss="modal" data-toggle="modal" data-target="#add_vendor_records" onclick="getVendorName('{{vendor}}')">Add</button>
     </div>
 
     </div>
@@ -89,10 +99,10 @@
     {% for type, model_info in t.items %}
 
 <div class="modal fade" id="view_{{vendor}}_{{type}}" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
         <div class="modal-header" >
-          <h5 class="modal-title" >{{vendor}}'s {{type}}</h5>
+          <h5 class="modal-title" >{{vendor}} {{type}}s</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -103,8 +113,9 @@
               <thead>
                 <tr>
                   <th scope="col"  id = 'types_header'>Model</th>
+                  <th scope="col"  id = 'types_header'>Quantity Bought</th>
                   <th scope="col" id = 'types_header'>Purchase Date</th>
-                  <th scope="col" id = 'types_header'>Anticipated Replacment</th>
+                  <th scope="col" id = 'types_header'>Anticipated Replacement</th>
                 </tr>
             </thead>
     {% for m in model_info%}
@@ -116,10 +127,12 @@
                 {% if forloop.counter > 1 %}
                     <td></td> <!-- For dates with same model -->
                 {% endif %}
+                <td align="center">{{date.v_quantity}}</td>
                 <td id="{{vendor}}_{{type}}">{{date.v_pm}}/{{date.v_py}}</td>
                 <td id="{{vendor}}_{{type}}">{{date.v_rm}}/{{date.v_ry}} </td>
          </tr>
              {% endfor %}
+         <tr><td></td><td></td><td></td><td></td></tr><!-- Adds line after each model -->
         </tbody>
        {% endfor %}
     {% endfor %}
@@ -141,38 +154,12 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- New Vendor Form -->
-<div class="modal fade" id="addVendor" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="add_vendor_records">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addVendorTitle">New Vendor</h5>
+        <h5 class="modal-title" id="addVendorTitle">New Record</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -180,25 +167,19 @@
       <div class="modal-body">
 <form class="needs-validation" novalidate>
   <div class="form-row vendorEntry">
-      <label for="deviceType">Device Type</label>
-      <div class="col-md-12 mb-3" id="deviceType">
-        <select  class="custom-select mr-sm-2" id="deviceHolder" >
-            <option selected id ="selectedType"></option>
-            {% for devices in vendors %}
-                {% for deviceTypes in devices %}
-                    <option  value="{{deviceTypes}}" id ="{{deviceTypes}}">{{deviceTypes}}</option>
-                {% endfor %}
-            {% endfor %}
-        </select>
-      </div>
+      <div class="col-md-12 mb-3" id="deviceType_">
+            <label for="deviceType">Device Type</label>
+          <input type="text" class="form-control" id="deviceType" placeholder="ex. Chromebook">
+        </div>
+
     <div class="col-md-6 mb-3 vendorEntry">
       <label for="deviceBrand">Device Make/Brand</label>
-      <input type="text" class="form-control" id="deviceBrand" placeholder="">
+      <input type="text" class="form-control" id="deviceBrand" placeholder="ex. Lenovo">
     </div>
     <div class="col-md-6 mb-3 vendorEntry">
       <label for="deviceModel">Device Model</label>
       <div class="input-group">
-        <input type="text" class="form-control" id="deviceModel"  required>
+        <input type="text" class="form-control" id="deviceModel"  placeholder="ex. 81er">
       </div>
     </div>
   </div>
@@ -209,7 +190,7 @@
     </div>
     <div class="col-md-6 mb-3">
       <label for="quantityBought">Quantity Bought</label>
-      <input type="number" class="form-control" id="quantityBought" placeholder="">
+      <input type="number" class="form-control" id="quantityBought" placeholder="28">
     </div>
   </div>
    <div class="form-row vendorEntry">
@@ -231,8 +212,8 @@
     </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" data-dismiss="modal" data-target="#removeDevice" id="deleteVendor" onclick="removeDevice('vendor');">Delete Vendor</button>
-        <button type="submit" class="btn btn-primary">Add Vendor</button>
+        <button type="submit" class="btn btn-secondary mr-auto" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary" onclick="addVendorRecord()" >Add</button>
     </div>
 
        </div>
@@ -242,28 +223,31 @@
 
 <
 
-<!------------------------ Add New Device Modal --------------------------------->
-<div class="modal"  id ="addDevice" tabindex="-1" role="dialog">
+<!------------------------ Add New Vendor Modal --------------------------------->
+<div class="modal"  id ="addVendor" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Track New Device</h5>
+        <h5 class="modal-title">Track New Vendor</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form>
-          <div class="form-group">
-            <label for="newDevice">Device Type</label>
-            <input type="text" class="form-control" id="trackNewDevice">
-              <div class="alert alert-danger mt-1 mb-1" id='trackDeviceError' role="alert" style="display:none"></div>
+          <label class="sr-only" for="new_vendor">Vendor</label>
+          <input type="text" class="form-control mb-2 mr-sm-2" id="new_vendor" placeholder="Vendor">
+
+          <label class="sr-only" for="new_vendor_id">Vendor ID</label>
+          <div class="input-group mb-2 mr-sm-2">
+            <input type="number" class="form-control" id="new_vendor_id" placeholder="Vendor ID">
           </div>
         </form>
+           <div class="alert alert-danger mt-1 mb-1" id='addVendorError' role="alert" style="display:none"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="trackDevice()">Add</button>
+        <button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary ml-auto" onclick="newVendor()">Add</button>
       </div>
     </div>
   </div>
