@@ -11,7 +11,7 @@
         <div class = "row">
             <div class="row mt-1"  role="group" id ="v_buttonGroup" >
                 <button type="button" class="btn btn-primary btn-lg mr-2" id="new_button" data-toggle="modal" data-target="#addVendor" >New</button>
-                <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editDevice">Edit</button>
+                <button type="button" class="btn btn-primary btn-lg btn-secondary ml-2" id="edit_button" data-toggle="modal" data-target="#editDevice" onclick="editVendor()">Edit</button>
             </div>
         </div>
 
@@ -24,7 +24,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{v.vendor}}</h5>
                         <ul class = "list-group list-group-flush">
-                            <button type="button" id = "{{v.vendor}}" class="btn btn-outline-secondary"  data-toggle="modal" data-target="#{{v.vendor}}_view" onclick = "isNull('{{v.vendor}}')">
+                            <button type="button" id = "{{v.vendor}}" class="btn btn-outline-secondary"  data-toggle="modal" data-target="#{{v.vendor.1}}_{{v.id}}_view">
                                 Vendor ID: {{v.id}}
                             </button>
                         </ul>
@@ -36,26 +36,20 @@
 
 
 <!-- Modal for Viewing device types for vendor -->
-{% for v in vendors%}
-    {% for vendor, type_info in v.items %}
-
-<div class="modal fade" id="{{vendor}}_view" tabindex="-1" role="dialog" aria-labelledby="{{v}}_view" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+{% for v in cards %}
+    {% if v.count > 0 %}
+        {% for ven in vendors%}
+            {% for vendor, type_info in ven.items %}
+<div class="modal fade" id="{{vendor.1}}_{{v.id}}_view" tabindex="-1" role="dialog" aria-labelledby="test" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
-
         <div class="modal-header" >
-          <h5 class="modal-title" >{{vendor}} Device Types</h5>
+          <h5 class="modal-title" >{{vendor}}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body"  id = 'modalBody'>
-            <div class="alert alert-warning mt-1 mb-1" id='{{vendor}}_null' role="alert" style="display:none">
-                <p>
-                    The Vendor <b><i>{{vendor}}</i></b> currently has no information.
-
-                </p>
-            </div>
 
           <table class="table table-bordered  table-striped table-hover" id = "{{vendor}}_device_table" >
             <thead>
@@ -68,7 +62,7 @@
             {% for type, model_info in t.items %}
             {% if type != 'N/A' %}
              <tr data-dismiss="modal" data-toggle="modal" data-target="#view_{{vendor}}_{{type}}">
-                 <td> {{type}}</td>
+                 <td> {{type}} </td>
              </tr>
             {% endif %}
         {% endfor %}
@@ -87,7 +81,35 @@
 {% endfor %} <!-- Ends Loop to iterate through vendors and type info -->
 {% endfor %} <!-- Ends loop to iterate through vendors on backend -->
 
+{% else %}
+    <div class="modal fade" id="{{v.vendor.1}}_{{v.id}}_view" tabindex="-1" role="dialog" aria-labelledby="test" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+            <div class="modal-header" >
+              <h5 class="modal-title" >{{v.vendor}} Device Types</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body"  id = 'modalBody'>
+                <div class="alert alert-warning mt-1 mb-1" id='{{vendor}}_null' role="alert">
+                    <p>
+                        The Vendor <b><i>{{v.vendor}}</i></b> currently has no information.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary mr-auto"  data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary ml-auto"  data-dismiss="modal" data-toggle="modal" data-target="#add_vendor_records" onclick="getVendorName('{{v.vendor}}')">Add</button>
+            </div>
+        </div>
+      </div>
+    </div>
+{% endif %}
+  {% endfor %}
 
+
+<!--- END OF VIEWING DEVICE TYPES FOR VENDORS -->
 
 
 
@@ -268,15 +290,26 @@
         <form>
             <div class="input-group mb-3">
                 <div class="form-group">
-              <label for= "currDevice" >Device to Edit</label>
-              <select id = 'currDevice' class="custom-select" onclick='editDevice();'>
-                  {% for v in vendorCount %}
-                    <option  value="{{v.device}}">{{v.device}}</option>
+              <label for= "vendorToEdit" >Vendor to Edit</label>
+              <select id = 'vendorToEdit' class="custom-select">
+                  {% for v in cards %}
+                    <option  value="{{v.vendor}}:{{v.id}}">{{v.vendor}} : {{v.id}}</option>
                   {% endfor %}
+
               </select>
 
-                  <label class = 'mt-3' for="newName">New Name</label>
-                  <input type="text" onkeypress='editDevice();' class="form-control" id="newName">
+           <label class="sr-only" for="new_vendor">New Vendor Name</label>
+          <input type="text" class="form-control mt-4 mb-2 mr-sm-2" id="vendorChanged" placeholder="Modified New Vendor">
+
+          <label class="sr-only" for="new_vendor_id">New Vendor ID</label>
+          <div class="input-group mb-2 mr-sm-2">
+            <input type="number" class="form-control" id="vendorIDChanged" placeholder="Modified Vendor ID">
+          </div>
+
+
+
+
+                  <!--<input type="text" onkeypress='editDevice();' class="form-control" id="newName"> -->
                 </div>
             </div>
 
@@ -293,14 +326,15 @@
     <label class="form-check-label" for="confirmChange" >
       Confirm Modification
     </label>
+
   </div>
+            <div class="alert alert-danger mt-1 mb-1" id='updateVendorError' role="alert" style="display:none"></div>
 
 </form>
       </div>
       <div class="modal-footer">
-          <button type="button" id='deleteName' class="btn btn-danger mr-auto"  data-dismiss='modal'
-                  data-toggle="modal"  data-target="#removeDevice"
-                  onclick='removeDevice("deviceType")'>
+          <button type="button" id='deleteV' class="btn btn-danger mr-auto"  data-dismiss='modal'
+                  data-toggle="modal"  data-target="#removeDevice">
 
               Delete
 
@@ -334,7 +368,7 @@
           <input type="text" class="form-control" id="toDelete" disabled>
         </div>
           <div class="form-check mb-2 mr-sm-2">
-            <input class="form-check-input" type="checkbox" id="confirmDeletion" checked>
+            <input class="form-check-input" type="checkbox" id="confirmVendorDeletion">
             <label class="form-check-label" for="confirmChange">
               Confirm Removal
             </label>
@@ -342,7 +376,7 @@
         </div>
       </div>
       <div class="modal-footer" >
-        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="deleteDevice" >Delete</button>
+        <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="removeVendorConfirmation" >Delete</button>
         <button type="button" class="btn btn-secondary ml-auto" data-dismiss="modal"data-toggle='modal' >Cancel</button>
       </div>
     </div>

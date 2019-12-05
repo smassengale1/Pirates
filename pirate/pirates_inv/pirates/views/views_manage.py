@@ -15,46 +15,63 @@ decorators = [never_cache, login_required, permission_required('is_superuser', r
 
 
 @method_decorator(decorators, name='dispatch')
+
+#This class has access to two database tables. VendorsID will hold the vendors name and id.
+# Where as vendors will hold the record for the vendors.
 class vendors(View):
     def get(self, request, *args, **kwargs):
         page_template = 'pirates/elements/vendors.html'
         page_title = 'Dover Technology Vendors'
 
-        districtVendors = Vendor.objects.order_by().values('v_vendor', 'v_id').distinct()
+
+        districtVendorStats = Vendor.objects.order_by().values('v_vendor', 'v_id').distinct()
+        districtVendors= VendorID.objects.order_by().values('v_vendor', 'v_id').distinct()
 
         vendor_list = [] #gives info about vendors
         vendor_stats = [] #names the cards on webpage
 
+        record_count = Vendor.objects.all().count()
+
+
+
 
         for v in districtVendors: #v['v_vendor'] && v['v_id']
-            districtTypes = Vendor.objects.filter(v_vendor = v['v_vendor'])
-            type_list = []
-            for t in districtTypes.values('v_type').distinct():
-                model_list = []
-                for m in districtTypes.filter(v_type = t['v_type']).values('v_model').distinct():
-                    date_list = []
-                    for d in districtTypes.filter(v_type = t['v_type']).filter(v_model = m['v_model']).values('v_quantity','v_pm', 'v_py', 'v_rm', 'v_ry'):
-                        date_list.append(d)
+            for vend in districtVendorStats:
+                print(vend)
+                districtTypes = Vendor.objects.filter(v_vendor = v['v_vendor'])
+                type_list = []
+                for t in districtTypes.values('v_type').distinct():
+                    print(t)
+                    model_list = []
+                    for m in districtTypes.filter(v_type = t['v_type']).values('v_model').distinct():
+                        date_list = []
+                        print(m)
+                        for d in districtTypes.filter(v_type = t['v_type']).filter(v_model = m['v_model']).values('v_quantity','v_pm', 'v_py', 'v_rm', 'v_ry'):
+                            print(d)
+                            date_list.append(d)
 
-                    model_list.append({
-                        m['v_model'] : date_list
+                        model_list.append({
+                            m['v_model'] : date_list
+                        })
+
+                    type_list.append({
+                        t['v_type']:model_list
                     })
 
-                type_list.append({
-                    t['v_type']:model_list
+                vendor_list.append({
+                    v['v_vendor'] : type_list,
+                    'id' : v['v_id']
                 })
-
-            vendor_list.append({
-                v['v_vendor'] : type_list,
-            })
 
             vendor_stats.append({
                 'vendor' : v['v_vendor'],
-                'id' : v['v_id']
+                'id' : v['v_id'],
+                'count': Vendor.objects.filter(v_vendor = v['v_vendor']).count()
             })
 
 
-        print(vendor_list)
+
+        #print(vendor_list)
         context = {
             'page_title': page_title,
             'vendors' : vendor_list,
@@ -64,17 +81,28 @@ class vendors(View):
 
         return render(request, page_template, context)
 
-
-def add_vendor(request):
+def vendor(request):
+    type = request.POST.get('type', None)
     vendor = request.POST.get('vendor', None)
-    id = request.POST.get('vendorID', None)
 
-    exist = Vendor.objects.filter(v_vendor = vendor, v_id = id).exists()
+
+    if type != "Record":
+        id = request.POST.get('vendorID', None)
+        data = add_vendor(vendor, id)
+    else:
+        data = add_vendor_record(vendor, request)
+
+    return JsonResponse(data, safe=False)
+
+
+#Adds vendor and vendor id --> Uses VendorID
+def add_vendor(vendor, id):
+    exist = VendorID.objects.filter(v_vendor = vendor, v_id = id).exists()
     print("Checking if %s(%s) is unique: " % (vendor,id), end='/')
     if(not exist):
         print("Confirmed/")
         print("Adding New Vendor: ", end='/')
-        newVendor = Vendor(v_vendor = vendor, v_id = id)
+        newVendor = VendorID(v_vendor = vendor, v_id = id)
         newVendor.save()
         print("%s(%s) added/" % (vendor, id))
     else:
@@ -83,34 +111,79 @@ def add_vendor(request):
 
     data = { 'exists' : exist }
 
-    return JsonResponse(data, safe=False)
+    return data
 
-##ADDS NEW DEVICE TO BE TRACKED
-def track_device(request):
 
-    device = request.POST.get('device', None).strip()
-    exist = deviceType.objects.filter(d_type=device).exists()
-    data={'exist': exist}
+
+#Adds information about the vendor --> Uses Vendor
+def add_vendor_record(vendor,request):
+    make = request.POST.get('make', None)
+    type = request.POST.get('deviceType', None)
+    model = request.POST.get('model', None)
+    quantity = request.POST.get('quantity', None)
+    pm = request.POST.get('purchase_month', None)
+    py = request.POST.get('purchase_year', None)
+    rm = request.POST.get('replacement_month', None)
+    ry = request.POST.get('replacement_year', None)
+
+    exist = Vendor.objects.filter(v_vendor = vendor, v_type = type, v_model = model, v_make = make,
+                                  v_quantity = quantity, v_pm = pm, v_py = py, v_rm = rm, v_ry = ry).exists()
+
+
 
     if not exist:
-        newDevice = deviceType(d_type = device)
-        newDevice.save()
-    else:
-        print('failed')
+        record = Vendor(v_vendor = vendor, v_type = type, v_model = model, v_make = make, v_quantity = quantity,
+                                  v_pm = pm, v_py = py, v_rm = rm, v_ry = ry)
 
+        record.save()
+
+
+
+    data = {
+        'exist' : exist
+    }
     return data
 
 
 ###CHANGES DATA IN DB
 def update_vendor(request):
-    type = request.POST.get('type', None).strip()
-    oldName = request.POST.get('oldName', None).strip()
-    newName = request.POST.get('newName', None).strip()
+    oVendor = request.POST.get('oVendor', None)
+    nVendor = request.POST.get('nVendor', None)
+    oID = request.POST.get('oID', None)
+    nID = request.POST.get('nID', None)
 
-    if type == 'device':
-        update_vendor_device(oldName, newName)
+    exist = Vendor.objects.filter(v_vendor = nVendor, v_id = nID).exists()
 
-    data = []
+    if not exist:
+        v = Vendor.objects.filter(v_vendor = oVendor, v_id = oID)
+        vendorID = Vendor.objects.filter(v_vendor = oVendor, v_id = nID) #table for just vendor and vendor ID
+
+        print('here')
+        for i in v:
+            i.v_vendor = nVendor
+            i.v_id = nID
+            i.save()
+
+        for i in vendorID:
+            i.v_vendor = nVendor
+            i.v_id  = nID
+            i.save()
+
+    else:
+        print("Vendor and Vendor ID Exist")
+
+
+
+
+
+
+    data = {
+        'exist' : exist,
+    }
+
+
+
+
     return JsonResponse(data, safe=False)
 
 

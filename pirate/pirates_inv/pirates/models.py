@@ -14,12 +14,19 @@ class Asset(models.Model):
     class Meta:
         db_table = 'asset'
 
+class VendorID(models.Model):
+    v_vendor = models.CharField(db_column='VendorName', max_length = 255)
+    v_id = models.CharField(db_column='VendorID', max_length = 255)
+
+    class Meta:
+        db_table = 'vendor_name'
 
 class Vendor(models.Model):
     v_vendor = models.CharField(db_column='VendorAssetVendor', max_length=255)
     v_id = models.CharField(db_column='VendorAssetID', max_length=25)
-    v_type = models.CharField(db_column='VendorAssetModel', max_length=255, null = True, default = "N/A")
-    v_model = models.CharField(db_column='VendorAssetType', max_length=255, null = True, default = "N/A")
+    v_type = models.CharField(db_column='VendorAssetModel', max_length=255)
+    v_make = models.CharField(db_column='VendorAssetMake', max_length=225)
+    v_model = models.CharField(db_column='VendorAssetType', max_length=255)
     v_quantity = models.IntegerField(db_column = 'VendorAssetQuantity', default = -0)
     v_pm = models.IntegerField(db_column='AssetPurchaseMonth', default = 0)
     v_py = models.IntegerField(db_column='AssetPurchaseYear', default=0)

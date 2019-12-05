@@ -59,11 +59,9 @@ function showDate(){
     })
 }
 
-function convertMonthToInt(date){
+function convertMonthToInt(month){
 
-    if (date.length > 1){
-        let month = date.slice(0,-5)
-
+    if (month.length > 1){
         switch(month){
             case 'January' :
                 month = 1;
@@ -106,17 +104,149 @@ function convertMonthToInt(date){
                 break;
 
         }
-        date = year + '-' + month
+        return month
     }
-    return date
+}
+
+// Fires when the edit button is clicked. This will allow the user to make
+// changes to the vendor name and vendor id when it was initially assigned.
+// The Jquery statement will fire upon the selected box change, and will
+// modify the boxes for the user to edit
+function editVendor(){
+    //Initial click of the edit button
+    let vendorType = document.getElementById('vendorToEdit').value;
+    let changed = document.getElementById('modifiedVersion');
+    let errorMessage = document.getElementById('updateVendorError')
+    document.getElementById('vendorChanged').value = vendorType.split(':')[0];
+    document.getElementById('vendorIDChanged').value = vendorType.split(':')[1];
+
+
+
+    //Jquery to modify boxes as user changes
+    $('#vendorToEdit').on('change', function(){
+        type = 'vendor'
+        let vendor = document.getElementById('vendorToEdit').value.split(':')[0]
+        let id = document.getElementById('vendorToEdit').value.split(':')[1]
+        modiName = document.getElementById('vendorChanged').value = vendor;
+        modiID = document.getElementById('vendorIDChanged').value = id;
+
+
+
+        console.log(`${vendor} : ${id}`)
+
+        //Modified box
+        changed.value = `${vendor} : ${id} ----> `
+
+    })
+
+    //Fires when name changes
+    $('#vendorChanged').on('keyup', function(){
+        vendor = document.getElementById('vendorToEdit').value.split(':')[0];
+        id = document .getElementById('vendorToEdit').value.split(':')[1];
+
+        modiName = document.getElementById('vendorChanged').value;
+        modiID = document.getElementById('vendorIDChanged').value
+
+
+        changed.value =  `${vendor} : ${id} ----> ${modiName} : ${modiID}`
+    })
+
+    //Fires when ID changes
+    $('#vendorIDChanged').on('keyup', function(){
+        vendor = document.getElementById('vendorToEdit').value.split(':')[0];
+        id = document .getElementById('vendorToEdit').value.split(':')[1];
+
+        modiName = document.getElementById('vendorChanged').value;
+        modiID = document.getElementById('vendorIDChanged').value
+
+
+        changed.value =  `${vendor} : ${id} ----> ${modiName} : ${modiID}`
+
+
+    })
+
+    //Pushing change to views
+    $('#updateName').on('click', function(){
+        vendor = document.getElementById('vendorToEdit').value.split(':')[0].trim();
+        id = document .getElementById('vendorToEdit').value.split(':')[1].trim();
+
+        modiName = document.getElementById('vendorChanged').value.trim();
+        modiID = document.getElementById('vendorIDChanged').value.trim();
+
+        if(modiName && modiID){
+            if(modiName != vendor || modiID != id){
+                $.ajax({
+                    type: "POST",
+                    url: '/ajax/update_vendor',
+                    async: false,
+                    data: {
+                    'oVendor' : vendor,
+                    'oID' : id,
+                    'nVendor' : modiName,
+                    'nID' : modiID
+                    },
+
+                    dataType: 'json',
+                    success: function (data){
+                        if(data.exist){
+                            errorMessage.style.display = 'block'
+                            errorMessage.innerHTML = `${modiName} : ${modiID}  --already exists.`
+                            console.log("Duplicate In Database")
+                        }
+                        else
+                            document.location.reload()
+                    }
+               })
+            }
+            else{
+                errorMessage.style.display = 'block'
+                errorMessage.innerHTML = vendor + ' will not be updated. There was no change.'
+                console.log('values are the same')
+            }
+        }
+        else{
+            errorMessage.style.display = 'block';
+            errorMessage.innerHTML = "Values cannot be null."
+            console.log('null')
+        }
+
+
+         setTimeout(function wait(){
+               $(errorMessage).fadeOut('slow');
+         }, 3000);
+
+
+    })
+
+
+     //Removes vendor from table
+    $('#removeVendorConfirmation').on('click', function(){
+        checkbox = document.getElementById('confirmVendorDeletion').checked
+        toDelete = document.getElementById('toDelete').value
+
+
+        if(checkbox){
+            if(toDelete){
+                //remove device
+            }
+            //let user know there is nothing ot delete
+        }
+        //let user know check box is null
+
+    })
+
+
 }
 
 
+// Checks to see if the Vendor has any records. If not then a message
+// to tell the user to sign up appears.
+
+//Not being used
 function isNull(vendor){
     const table = document.getElementById(vendor + "_device_table")
     const nullTable = document.getElementById(vendor + "_null")
-    const row = table.rows.length - 1;
-
+    const row = table.rows.length - 2;
 
     if (row === 0){
         table.style.display = "none";
@@ -138,34 +268,74 @@ function getVendorName(vendor){
 }
 
 function addVendorRecord(){
-let deviceType = document.getElementById('deviceType').value.trim()
-let make = document.getElementById('deviceBrand').value.trim()
-let model = document.getElementById('deviceModel').value.trim()
-let vendor = document.getElementById('deviceVendor').value.trim()
-let quantity = document.getElementById('quantityBought').value.trim()
-let pd = document.getElementById('purchaseDate').value.trim()
-let rd = document.getElementById('replacementDate').value.trim()
-
-let month =  rd.slice(0,-5)
-let year = parseInt(date.slice(-4))
-
-rm = convertMonthToInt(rd)
-ry =
+    let type = 'Record' //Tells views function how to handle
 
 
-console.log(`${deviceType}`)
-console.log(make)
-console.log(model)
-console.log(vendor)
-console.log(quantity)
-console.log(pd)
-console.log(rd)
+    let deviceType = document.getElementById('deviceType').value.trim()
+    let make = document.getElementById('deviceBrand').value.trim()
+    let model = document.getElementById('deviceModel').value.trim()
+    let vendor = document.getElementById('deviceVendor').value.trim()
+    let quantity = document.getElementById('quantityBought').value.trim()
+    let pd = document.getElementById('purchaseDate').value.trim()
+    let rd = document.getElementById('replacementDate').value.trim()
+
+    let purchase_month = parseInt(pd.slice(-2))
+    let purchase_year = parseInt(pd.slice(0,5))
+
+    let replacement_month =  convertMonthToInt(rd.slice(0,-5))
+    let replacement_year = parseInt(rd.slice(-4))
 
 
+    if(vendor)
+
+        $.ajax({
+            type: "POST",
+            url: '/ajax/vendor',
+            async: false,
+            data: {
+            'type' : type,
+            'vendor' : vendor,
+            'make' : make,
+            'deviceType' : deviceType,
+            'model' : model,
+            'quantity': quantity,
+            'purchase_month': purchase_month,
+            'purchase_year': purchase_year,
+            'replacement_month': replacement_month,
+            'replacement_year':replacement_year
+            },
+
+            dataType: 'json',
+            success: function (data){
+                if(data.exist){
+                    null
+                    //If record already exist
+
+                }
+                else
+                    document.location.reload()
+            }
+        })
+
+
+    else{
+        //errorMessage = document.getElementById('addVendorError');
+        //errorMessage.innerHTML = "Input cannot be Null";
+        //errorMessage.style.display = 'block';
+    }
+
+
+setTimeout(
+   function wait(){
+        $(errorMessage).fadeOut('slow');
+    }, 3000);
 
 
 }
+
 function newVendor(){
+    let type = 'vendor'
+
     let vendor = document.getElementById('new_vendor').value.trim();
     let id = document.getElementById('new_vendor_id').value.trim();
 
@@ -175,9 +345,10 @@ function newVendor(){
         if(vendor && id){
             $.ajax({
                 type: "POST",
-                url: '/ajax/add_vendor',
+                url: '/ajax/vendor',
                 async: false,
                 data: {
+                'type' : type,
                 'vendor' : vendor,
                 'vendorID' : id,
                 },
@@ -201,10 +372,10 @@ function newVendor(){
             errorMessage.innerHTML = "Input cannot be Null";
             errorMessage.style.display = 'block';
         }
+
+
+
+
     })
 
-    setTimeout(
-       function wait(){
-            $(errorMessage).fadeOut('slow');
-        }, 3000);
 }
