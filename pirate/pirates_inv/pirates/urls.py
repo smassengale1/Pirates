@@ -39,5 +39,6 @@ urlpatterns = [
 
     path('ajax/vendor', manage_views.vendor),
     path('ajax/update_vendor', manage_views.update_vendor),
+    path('ajax/remove_vendor', manage_views.remove_vendor),
 
 ]

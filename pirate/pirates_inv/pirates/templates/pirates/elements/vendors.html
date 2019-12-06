@@ -354,7 +354,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Remove Device</h5>
+        <h5 class="modal-title">Remove Vendor</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -368,12 +368,20 @@
           <input type="text" class="form-control" id="toDelete" disabled>
         </div>
           <div class="form-check mb-2 mr-sm-2">
-            <input class="form-check-input" type="checkbox" id="confirmVendorDeletion">
-            <label class="form-check-label" for="confirmChange">
+            <div class="alert alert-warning mt-1 mb-1" id='{{vendor}}_null' role="alert">
+                   <small><p>
+                        If you remove the vendor, <b>ALL</b> records associated will be deleted as
+                        well.
+                   </p></small>
+            </div>
+            <input class="form-check-input mt-2" type="checkbox" id="confirmVendorDeletion">
+            <label class="form-check-label mt-2" for="confirmChange">
               Confirm Removal
             </label>
           </div>
         </div>
+        <div class="alert alert-danger mt-1 mb-1" id='RemoveVendorError' role="alert" style="display:none"></div>
+
       </div>
       <div class="modal-footer" >
         <button type="button" class="btn btn-danger mr-auto" data-toggle="modal" id="removeVendorConfirmation" >Delete</button>

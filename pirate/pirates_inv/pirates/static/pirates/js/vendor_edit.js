@@ -219,16 +219,40 @@ function editVendor(){
     })
 
 
+    $('#deleteV').on('click', function(){
+        vendor = document.getElementById('vendorToEdit').value.split(':')[0].trim();
+        id = document .getElementById('vendorToEdit').value.split(':')[1].trim();
+        toDelete = document.getElementById('toDelete').value = vendor + ' : ' + id
+
+    })
+
      //Removes vendor from table
     $('#removeVendorConfirmation').on('click', function(){
         checkbox = document.getElementById('confirmVendorDeletion').checked
-        toDelete = document.getElementById('toDelete').value
+        toDelete = document.getElementById('toDelete').innerHTML
 
 
         if(checkbox){
-            if(toDelete){
-                //remove device
-            }
+             $.ajax({
+                type: "POST",
+                url: '/ajax/remove_vendor',
+                async: false,
+                data: {
+                'type' : type,
+                'vendor' : vendor,
+                'id' : id,
+                },
+
+                dataType: 'json',
+                success: function (data){
+                    if(!data.exist){
+                        errorMessage.style.display = 'Block'
+                        errorMessage.innerHTML = 'Unable to remove vendor'
+                    }
+                    else
+                        document.location.reload()
+                }
+           })
             //let user know there is nothing ot delete
         }
         //let user know check box is null

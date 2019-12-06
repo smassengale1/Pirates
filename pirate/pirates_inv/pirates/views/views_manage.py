@@ -37,17 +37,13 @@ class vendors(View):
 
         for v in districtVendors: #v['v_vendor'] && v['v_id']
             for vend in districtVendorStats:
-                print(vend)
                 districtTypes = Vendor.objects.filter(v_vendor = v['v_vendor'])
                 type_list = []
                 for t in districtTypes.values('v_type').distinct():
-                    print(t)
                     model_list = []
                     for m in districtTypes.filter(v_type = t['v_type']).values('v_model').distinct():
                         date_list = []
-                        print(m)
                         for d in districtTypes.filter(v_type = t['v_type']).filter(v_model = m['v_model']).values('v_quantity','v_pm', 'v_py', 'v_rm', 'v_ry'):
-                            print(d)
                             date_list.append(d)
 
                         model_list.append({
@@ -156,7 +152,7 @@ def update_vendor(request):
 
     if not exist:
         v = Vendor.objects.filter(v_vendor = oVendor, v_id = oID)
-        vendorID = Vendor.objects.filter(v_vendor = oVendor, v_id = nID) #table for just vendor and vendor ID
+        vendorID = VendorID.objects.filter(v_vendor = oVendor, v_id = nID) #table for just vendor and vendor ID
 
         print('here')
         for i in v:
@@ -186,38 +182,57 @@ def update_vendor(request):
 
     return JsonResponse(data, safe=False)
 
+def remove_vendor(request):
+    data = removeVendor(request)
+
+    return JsonResponse(data, safe=False)
+
+def removeVendor(request):
+    vendor = request.POST.get('vendor', None)
+    id = request.POST.get('id', None)
+    #We need this to be true to delete the objects
+    vID = VendorID.objects.filter(v_vendor = vendor, v_id = id)
+
+    v = Vendor.objects.filter(v_vendor = vendor, v_id = id)
+
+    if vID.exists():
+        print("Attempting to remove")
+        for i in vID:
+            i.delete()
+
+    if v.exists():
+        for i in v:
+            i.delete()
 
 
-def update_vendor_device(oldName, newName):
-    exist = deviceType.objects.filter(d_type=newName).exists()
 
-    data={
-        'exist':exist,
-        'isNull':False
+    if VendorID.objects.filter(v_vendor = vendor, v_id = id).exists() or
+        Vendor.objects.filter(v_vendor = vendor, v_id = id).exists():
+            data = {
+                'exist' : True
+            }
+    else:
+        data = {
+            'exist' : False
+        }
+
+
+        #redo query
+
+        #remove vendor
+
+
+
+    #We want this to return false after it is done
+    data = {
+        'v' : v.exists(),
+        'vID' : vID.exists()
     }
 
-    if not exist:
-        if newName != '':
-            v = deviceType.objects.filter(d_type=oldName)
+    return data
 
-            print("Renaming %s ----> %s" % (oldName, newName))
-            for i in v:
-                i.d_type= newName
-                i.save()
-            print("Device Type has been changed.")
 
-            """
-            print('Updating Devices where Type was %s to %s' % (oldName, newName))
-            for i in a:
-                i.a_building = newName
-                i.save()
-            print("Types have been reassigned")
-            
-            """
-        else:
-            data['isNull'] = True
-    else:
-        print("UPDATE ERROR: Name already exist")
+
 
 
 
@@ -265,9 +280,6 @@ class locations(View):
 
         return render(request, page_template, context)
 
-
-
-
 def validate_building(request):
     building = request.POST.get('building', None).strip()
     type = request.POST.get('type', None)
@@ -282,8 +294,6 @@ def validate_building(request):
         data = addBuilding(building)
 
     return JsonResponse(data, safe=False)
-
-
 
 def addBuilding(building):
     exist = Location.objects.filter(location_building = building).exists()
@@ -310,8 +320,6 @@ def addBuilding(building):
 
 
     return data
-
-
 
 def addRoom(building, room):
     exist = Location.objects.filter(location_building = building, location_room = room).exists()
@@ -344,11 +352,6 @@ def addRoom(building, room):
 
 
     return data
-
-
-
-
-
 
 def update_building(request):
     oldName = request.POST.get('oldRoom', None).strip()
@@ -440,9 +443,6 @@ def updateRoom(oldName, newName, building):
 
     return data
 
-
-
-
 def remove_location(request):
     area = request.POST.get('area', None).strip()
     type = request.POST.get('type', None)
@@ -460,8 +460,6 @@ def remove_location(request):
 
 
     return JsonResponse(data, safe=False)
-
-
 
 def removeBuilding(building):
     print('Confirming %s is in Database' % building)
@@ -495,8 +493,6 @@ def removeBuilding(building):
 
 
     return data
-
-
 
 def removeRoom(building, room):
     print("\nConfirming %s <%s>" % (building, room))
