@@ -129,7 +129,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-
+            <p>{{type_info}}</p>
         <div class="modal-body"  id = '{{vendor}}_{{type}}_body'>
           <table class="table table-bordered  table-striped table-hover">
               <thead>
@@ -143,7 +143,9 @@
     {% for m in model_info%}
       {% for model, date_info in m.items %}
        <tbody>
-         <tr data-dismiss="modal" data-toggle="modal" data-target="#view_{{vendor}}_{{type}}">
+         <tr data-dismiss="modal" data-toggle="modal" onclick="editVendorRecord('{{vendor}}', '{{type}}', '{{model}}', '{{date_info.0.v_quantity}}',
+                '{{date_info.0.v_pm}}', '{{date_info.0.v_py}}', '{{date_info.0.v_rm}}', '{{date_info.0.v_ry}}')" data-target = "#add_vendor_records" data-dismiss="modal">
+
                 <td id="{{vendor}}_{{type}}"> {{model}}</td>
              {% for date in date_info %}
                 {% if forloop.counter > 1 %}

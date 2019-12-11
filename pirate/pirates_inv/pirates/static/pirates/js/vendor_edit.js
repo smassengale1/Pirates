@@ -59,6 +59,54 @@ function showDate(){
     })
 }
 
+function convertIntToMonth(month){
+
+    switch(month){
+        case '1' :
+            month = 'January';
+            break;
+        case '2':
+            month = 'February';
+            break;
+        case 'March':
+            month = 'March';
+            break;
+        case '4':
+            month = 'April';
+            break;
+        case '5':
+            month = 'May';
+            break;
+        case '6':
+            month = 'June';
+            break;
+        case '7':
+            month = 'July';
+            break;
+        case '8':
+            month = 'August';
+            break;
+        case '9':
+            month = 'September';
+            break;
+        case '10':
+            month = 'October';
+            break;
+        case '11':
+            month = 'November';
+            break;
+        case '12':
+            month = 'December';
+            break;
+        default:
+            month = '';
+            break;
+
+    }
+
+    return month;
+}
+
 function convertMonthToInt(month){
 
     if (month.length > 1){
@@ -401,5 +449,25 @@ function newVendor(){
 
 
     })
+
+}
+
+
+function editVendorRecord(vendor, brand, type, model, quantity, pm, py, rm, ry){
+
+    if(pm == 1){
+        pm = 0+pm
+    }
+
+alert(`${py}-${pm}`)
+
+ document.getElementById('deviceType').value = type
+ document.getElementById('deviceBrand').value = ' ';
+ document.getElementById('deviceModel').value = model;
+ document.getElementById('deviceVendor').value = vendor;
+ document.getElementById('quantityBought').value = quantity;
+ document.getElementById('purchaseDate').value = `${py}-${pm}`;
+ document.getElementById('replacementDate').value = convertIntToMonth(rm) + ' ' + ry;
+
 
 }

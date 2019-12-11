@@ -21,6 +21,8 @@ function validateBuilding(){
 
     errorMessage.style.display = 'none'
 
+
+
         $.ajax({
             type: "POST",
             url: '/ajax/validate_building',

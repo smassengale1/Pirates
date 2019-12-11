@@ -206,8 +206,8 @@ def removeVendor(request):
 
 
 
-    if VendorID.objects.filter(v_vendor = vendor, v_id = id).exists() or
-        Vendor.objects.filter(v_vendor = vendor, v_id = id).exists():
+    if VendorID.objects.filter(v_vendor = vendor, v_id = id).exists():
+        if Vendor.objects.filter(v_vendor = vendor, v_id = id).exists():
             data = {
                 'exist' : True
             }
@@ -215,12 +215,6 @@ def removeVendor(request):
         data = {
             'exist' : False
         }
-
-
-        #redo query
-
-        #remove vendor
-
 
 
     #We want this to return false after it is done
